@@ -11,33 +11,69 @@ Dominykas Pošiūnas
 
 ## Content
 
-- Ada history
-- Main Ada features
-- Basic Ada syntax
+- Ada introduction
 - Multithreading concepts in Ada
-- Data race condition
-- Automatic synchronization
-- Custom synchronization 'rendezvous'
-- Producer-consumer problem
 - ...
 
 ---
 
-## Ada history
+### Ada purpose
 
-- Ada was originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France;
-- Major Ada versions include: Ada 83, Ada 95, Ada 2005 and Ada 2012 (the most recent);
-- The name “Ada” is not an acronym; it was chosen in honor of Augusta Ada Lovelace (1815-1852), a mathematician who is sometimes regarded as the world’s first programmer;
+- Consolidate languages used by US military.
+- Embedded amd real-times systems.
+- Make bugs almost non-exsistent.
+
+---
+
+### Ada history
+
+- Ada was originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France.
+- Major Ada versions include: Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
+- The name “Ada” is not an acronym. It was chosen in honor of Augusta Ada Lovelace (1815-1852), a mathematician who is sometimes regarded as the world’s first programmer.
+
+---
+
+### Common uses
+
+- Avionics (e.g. Airbus A380 flight control and navigation systems).
+- Railways (e.g. Paris Metro).
+- Space Technology (e.g. European Space Agency satellite control software).
+- Military (e.g. Weapon systems, radar, and control systems).
+- Banking (e.g. Transaction Processing).
 
 ---
 
 ### Main Ada features
 
+TODO needs improvement
 structured
 statically typed
 imperative
 high-level
-object-oriented
+
+---
+
+### Hello World
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+-- The `with` clause makes the Ada.Text_IO package available in this procedure.
+-- The `use` clause allows direct access to Text_IO's subprograms, like Put_Line, 
+-- without needing to prefix them with Ada.Text_IO.
+
+procedure Greet is
+-- This defines the procedure named `Greet`. It doesn't take any parameters.
+
+begin
+   -- The body of the procedure starts here.
+   
+   -- Print "Hello, World!" to the screen
+   Put_Line ("Hello, World!");
+   -- The Put_Line subprogram prints the string "Hello, World!" to the standard output (console).
+
+end Greet;
+-- The procedure ends here.
+```
 
 ---
 
@@ -220,10 +256,73 @@ end Show_Rendezvous;
 
 ---
 
+### Reader-writer or Consumer-producer or any other problem using 'rendevzous' synchronization
+
+TODO
+
+---
+
+### Protected objects
+
+In Ada, protected objects are a concurrency control mechanism designed to safely encapsulate and manage shared data.
+
+```ada
+protected Obj is
+    procedure Set(Value : Integer);  -- Setter-like operation
+    function Get return Integer;     -- Getter-like operation
+private
+    Local : Integer;                 -- Protected data
+end Obj;
+
+protected body Obj is
+    procedure Set(Value : Integer) is
+    begin
+        Local := Value;
+    end Set;
+
+    function Get return Integer is
+    begin
+        return Local;
+    end Get;
+end Obj;
+```
+
+---
+
+### Logic of Protected objects
+
+- Protected objects encapsulate data in their private part. Data is shared among tasks but can only be accessed via protected operations.
+- Ada ensures that when a task is executing a protected operation, no other task can interfere, making it thread-safe by default.
+- Protected procedures and functions are similar to getters and setters in object-oriented programming.
+
+---
+
+### Protected objects in Java?
+
+In Java, the concept closest to protected objects in Ada can be implemented using synchronized methods or synchronized blocks, which are used to control access to shared data among multiple threads
+
+```java
+public class SharedResource {
+    private int value;
+
+    // Synchronized setter (like Ada's protected procedure Set)
+    public synchronized void setValue(int newValue) {
+        this.value = newValue;
+    }
+
+    // Synchronized getter (like Ada's protected function Get)
+    public synchronized int getValue() {
+        return this.value;
+    }
+}
+```
+
+---
+
 ## References
 
 [1] <https://www.adacore.com/about-ada>
-[2]
+[2] <https://learn.adacore.com/courses/intro-to-ada/chapters/tasking.html>
 [3]
 [4]
 [5]
