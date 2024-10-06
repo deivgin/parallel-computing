@@ -27,9 +27,9 @@ CustomMutualExclusion mtx;
 void computeSum(const int threadID, const int* data, const int start, const int end, int& logIndex) {
     long long partial = 0;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
-    // mtx.lock();
+    mtx.lock();
     //-------- Critical section ---------------------------------------------
     for (int i = start; i < end; ++i) {
         partial += data[i];
@@ -38,10 +38,10 @@ void computeSum(const int threadID, const int* data, const int start, const int 
     sharedLog[logIndex++] = "Thread " + std::to_string(threadID) + " current shared value " + std::to_string(partial);
     sharedTotal += partial;
     //-----------------------------------------------------------------------
-    // mtx.unlock();
+    mtx.unlock();
 }
 
-// incorrect computation - one thread log is not correct
+// incorrect computation - one thread log is not correct, one thread is missing
 // Final shared total: 500000500001
 // Log of computations:
 // Thread 2 current shared value 937512500
