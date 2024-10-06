@@ -1,0 +1,22 @@
+with "config/command_line_arguments_config.gpr";
+project Command_Line_Arguments is
+
+   for Source_Dirs use ("src/", "config/");
+   for Object_Dir use "obj/" & Command_Line_Arguments_Config.Build_Profile;
+   for Create_Missing_Dirs use "True";
+   for Exec_Dir use "bin";
+   for Main use ("command_line_arguments.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use Command_Line_Arguments_Config.Ada_Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Switches ("Ada") use ("-Es"); --  Symbolic traceback
+   end Binder;
+
+   package Install is
+      for Artifacts (".") use ("share");
+   end Install;
+
+end Command_Line_Arguments;
