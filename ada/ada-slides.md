@@ -53,12 +53,24 @@ high-level
 
 ---
 
+### The big five structural elements
+
+Ada programs are organized with main 5 elements:
+
+- Packages - groups, units of compilations
+- Subprograms - procedures, functions - reusable sequences of instructions
+- Generics - arbitrary type packages that meet some requirement
+- Tasks - operations done in parallel
+- Protected objects - coordinate shared data
+
+---
+
 ### Hello World
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
 -- The `with` clause makes the Ada.Text_IO package available in this procedure.
--- The `use` clause allows direct access to Text_IO's subprograms, like Put_Line, 
+-- The `use` clause allows direct access to Text_IO's subprograms, like Put_Line,
 -- without needing to prefix them with Ada.Text_IO.
 
 procedure Greet is
@@ -66,7 +78,7 @@ procedure Greet is
 
 begin
    -- The body of the procedure starts here.
-   
+
    -- Print "Hello, World!" to the screen
    Put_Line ("Hello, World!");
    -- The Put_Line subprogram prints the string "Hello, World!" to the standard output (console).
@@ -82,8 +94,8 @@ end Greet;
 - A thread in Ada is called "Task".
 - Multithreading in Ada might be called "Tasking".
 - Tasks may synchronize with the main application but may also process information completely independently from the main application.
-- Tasks are declared using the keyword *task*.
-- The task implementation is specified in a *task body* block.
+- Tasks are declared using the keyword _task_.
+- The task implementation is specified in a _task body_ block.
 
 - The main application is itself a task and can be referenced "master task".
 
@@ -195,7 +207,7 @@ end Show_Simple_Sync;
 
 ### Custom synchronization 'rendezvous'
 
-- Custom synchronization points can be defined with keyword *entry*.
+- Custom synchronization points can be defined with keyword _entry_.
 - Entry points are defined in the task initialization. For example:
 
 ```ada
@@ -204,7 +216,7 @@ task T is
 end T;
 ```
 
-- In the task body, you specify where the task will accept these entries by using the keyword *accept*. For example:
+- In the task body, you specify where the task will accept these entries by using the keyword _accept_. For example:
 
 ```ada
 task body T is
@@ -250,8 +262,8 @@ end Show_Rendezvous;
 
 - The task T is declared with an entry point called "Start".
 - T will pause and wait for the main program to call the an entry point.
-- When the main program calls *T.Start*, it synchronizes with the accept statement in task T.
-- *accept Start* is where T waits for entry call from the main procedure.
+- When the main program calls _T.Start_, it synchronizes with the accept statement in task T.
+- _accept Start_ is where T waits for entry call from the main procedure.
 - The result - "In Main" will always be printed before "In T"
 
 ---
