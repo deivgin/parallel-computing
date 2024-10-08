@@ -2,7 +2,7 @@
 marp: true
 ---
 
-# Concurrency in Ada
+# Ada's task and synchonization capabilites
 
 Deividas Gineitis
 Dominykas Pošiūnas
@@ -11,25 +11,33 @@ Dominykas Pošiūnas
 
 ## Content
 
-- Ada introduction
-- Multithreading concepts in Ada
-- ...
+- Ada history.
+- Ada features, usage and syntax.
+- Ada's task and synchonization capabilites.
 
 ---
 
-### Ada purpose
+### The history of Ada 1/2
 
-- Consolidate languages used by US military.
-- Embedded amd real-times systems.
-- Make bugs almost non-exsistent.
+- The Department of Defense (Dod) study in the early and middle 1970s indicated that enormous saving in software costs (about 24 billion. $ between 1983 and 1999) might be achieved if the Dod used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
+- An international competition was held to design a language based on Dod’s requirements.
 
 ---
 
-### Ada history
+### The history of Ada 2/2
 
-- Ada was originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France.
-- Major Ada versions include: Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
+- The winning proposal was programming language, originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France. With some minor modifications, this language referred to as **Ada** was adopted as an American National Standards Institute (ANSI) standard in 1983 (Ada 83).
+- Major Ada versions include Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
 - The name “Ada” is not an acronym. It was chosen in honor of Augusta Ada Lovelace (1815-1852), a mathematician who is sometimes regarded as the world’s first programmer.
+
+---
+
+### Ada major features
+
+- Ada is a structured, statically typed, imperative, and object-oriented high-level programming language, inspired by Pascal and other languages.
+- Designed for embedded and real-times systems, focused on making bugs almost non-existent.
+- Major features of Ada include:
+Strong typing, runtime checking, parallel processing (tasks, synchronous message passing), exception handling, OOP, polymorphism.
 
 ---
 
@@ -43,6 +51,7 @@ Dominykas Pošiūnas
 
 ---
 
+<<<<<<< HEAD
 ### Main Ada features
 
 TODO needs improvement
@@ -65,6 +74,8 @@ Ada programs are organized with main 5 elements:
 
 ---
 
+=======
+>>>>>>> db8e6b4 (Update history and add major features)
 ### Hello World
 
 ```ada
@@ -335,7 +346,7 @@ public class SharedResource {
 
 [1] <https://www.adacore.com/about-ada>
 [2] <https://learn.adacore.com/courses/intro-to-ada/chapters/tasking.html>
-[3]
-[4]
-[5]
+[3] <https://youtu.be/YPD9U4Wuh5A?si=YxNWNLj57tAQoIne>
+[4] <https://www.youtube.com/watch?v=ZcdCDEhkbjU>
+[5] <https://www.youtube.com/watch?v=RjbrUbp1Xo4>
 [6]
