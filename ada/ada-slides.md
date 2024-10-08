@@ -51,17 +51,6 @@ Strong typing, runtime checking, parallel processing (tasks, synchronous message
 
 ---
 
-<<<<<<< HEAD
-### Main Ada features
-
-TODO needs improvement
-structured
-statically typed
-imperative
-high-level
-
----
-
 ### The big five structural elements
 
 Ada programs are organized with main 5 elements:
@@ -74,8 +63,6 @@ Ada programs are organized with main 5 elements:
 
 ---
 
-=======
->>>>>>> db8e6b4 (Update history and add major features)
 ### Hello World
 
 ```ada
@@ -102,13 +89,11 @@ end Greet;
 
 ### Multithreading in Ada
 
-- A thread in Ada is called "Task".
-- Multithreading in Ada might be called "Tasking".
-- Tasks may synchronize with the main application but may also process information completely independently from the main application.
-- Tasks are declared using the keyword _task_.
+- A thread in Ada is called "Task" and declared using the keyword _task_.
 - The task implementation is specified in a _task body_ block.
-
 - The main application is itself a task and can be referenced "master task".
+- Tasks may synchronize with the main application but may also process information completely independently from the main application.
+- Multithreading in Ada might be called "Tasking".
 
 ---
 
