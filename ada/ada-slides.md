@@ -17,14 +17,14 @@ Dominykas Pošiūnas
 
 ---
 
-### The history of Ada 1/2
+### The history of Ada (1/2)
 
 - The Department of Defense (Dod) study in the early and middle 1970s indicated that enormous saving in software costs (about 24 billion. $ between 1983 and 1999) might be achieved if the Dod used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
 - An international competition was held to design a language based on Dod’s requirements.
 
 ---
 
-### The history of Ada 2/2
+### The history of Ada (2/2)
 
 - The winning proposal was programming language, originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France. With some minor modifications, this language referred to as **Ada** was adopted as an American National Standards Institute (ANSI) standard in 1983 (Ada 83).
 - Major Ada versions include Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
@@ -87,17 +87,47 @@ end Greet;
 
 ---
 
-### Multithreading in Ada
+### Tasks in Ada
 
-- A thread in Ada is called "Task" and declared using the keyword _task_.
+- A thread in Ada is called "Task" and is declared using the keyword _task_.
 - The task implementation is specified in a _task body_ block.
-- The main application is itself a task and can be referenced "master task".
+- The main application is itself a task and can be referenced as a "master task".
 - Tasks may synchronize with the main application but may also process information completely independently from the main application.
 - Multithreading in Ada might be called "Tasking".
 
 ---
 
-### Simple 'multithreading' example in Ada (1)
+### Task declaration
+
+- Simple task:
+
+```ada
+task T; --  Simple task declaration
+```
+
+```ada
+task T is --  Simple task declaration
+   --  declarations of exported identifiers
+end T
+```
+
+- Task type:
+
+```ada
+task type TT; --  Task type declaration
+```
+
+```ada
+task type TT is --  Task type declaration
+   --  declarations of exported identifiers
+end TT;
+```
+
+The difference between simple tasks and task types is that task types don't create actual tasks.
+
+---
+
+### Simple task example in Ada (1)
 
 - master and T tasks runs concurrently.
 
@@ -105,20 +135,20 @@ end Greet;
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Show_Simple_Task is
-task T;
+   task T;
 
-task body T is
+   task body T is
+   begin
+      Put_Line ("In task T");
+   end T;
 begin
-    Put_Line ("In task T");
-end T;
-begin
-Put_Line ("In main");
+   Put_Line ("In main");
 end Show_Simple_Task;
 ```
 
 ---
 
-### Simple 'multithreading' example in Ada (2)
+### Simple task example in Ada (2)
 
 - master, T and T2 tasks runs concurrently.
 
@@ -176,10 +206,10 @@ end Data_Race;
 
 ---
 
-### Automatic synchronization
+### Simple synchronization
 
-- Master task always waits until its subtasks have finished before it allows itself to complete.
-- This can be considered as an automatic synchronization between the master task and its subtasks.
+- All tasks will run when main procedure starts (no start).
+- The main terminates only if all tasks terminate (no join).
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
@@ -201,16 +231,21 @@ end Show_Simple_Sync;
 
 ---
 
-### Custom synchronization 'rendezvous'
+### Custom synchonization 'rendezvous' (1/2)
 
+- Task may export something for other task to use. They can be called as custom synchronization points.
 - Custom synchronization points can be defined with keyword _entry_.
-- Entry points are defined in the task initialization. For example:
+- Entry points are defined in the task declaration. For example:
 
 ```ada
 task T is
    entry Start;
 end T;
 ```
+
+---
+
+### Custom synchronization 'rendezvous' (2/2)
 
 - In the task body, you specify where the task will accept these entries by using the keyword _accept_. For example:
 
