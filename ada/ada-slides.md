@@ -148,6 +148,29 @@ end Show_Simple_Task;
 
 ---
 
+### Task type example in Ada (1)
+
+- master and T tasks also runs concurrently.
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Show_Simple_Task_Type is
+   task type TT;
+
+   task body TT is
+   begin
+      Put_Line ("In task type TT");
+   end TT;
+
+   A_Task : TT;
+begin
+   Put_Line ("In main");
+end Show_Simple_Task_Type;
+```
+
+---
+
 ### Simple task example in Ada (2)
 
 - master, T and T2 tasks runs concurrently.
@@ -231,9 +254,9 @@ end Show_Simple_Sync;
 
 ---
 
-### Custom synchonization 'rendezvous' (1/2)
+### Custom synchonization 'entry-accept' (1)
 
-- Task may export something for other task to use. They can be called as custom synchronization points.
+- Task may export something for other task to use (to call). They can be called as custom synchronization points.
 - Custom synchronization points can be defined with keyword _entry_.
 - Entry points are defined in the task declaration. For example:
 
@@ -245,21 +268,38 @@ end T;
 
 ---
 
-### Custom synchronization 'rendezvous' (2/2)
+### Custom synchronization 'entry-accept' (2)
 
-- In the task body, you specify where the task will accept these entries by using the keyword _accept_. For example:
+- In the task body, you specify where the task will accept entry calls by using the keyword _accept_.
+- For each entry point there is corresponding accept statment.
+- The accept block can be reffered as _rendezvous_ section.
+ For example:
 
 ```ada
 task body T is
 begin
    accept Start;
+   --  This is rendezvous section
    Put_Line ("In T");
 end T;
 ```
 
 ---
 
-### 'rendezvous' synchronization example
+### Custom synchronization 'entry-accept' (3)
+
+Tasks run independently until either:
+
+- An accept statement.
+Waits for someone to call this entry, then proceeds to the rendezvous section. After this, both tasks execute their ways.
+- An entry call.
+Waits for corresponding task reaching its accept statement, then proceeds to the randezvous section. After this, both tasks execute their ways.
+
+This is synchronous communication.
+
+---
+
+### 'entry-accept' synchronization example
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
@@ -292,7 +332,7 @@ end Show_Rendezvous;
 ### 'rendezvous' synchronization example explanation
 
 - The task T is declared with an entry point called "Start".
-- T will pause and wait for the main program to call the an entry point.
+- T will pause and wait for the main program to call an entry point.
 - When the main program calls _T.Start_, it synchronizes with the accept statement in task T.
 - _accept Start_ is where T waits for entry call from the main procedure.
 - The result - "In Main" will always be printed before "In T"
@@ -302,6 +342,13 @@ end Show_Rendezvous;
 ### Reader-writer or Consumer-producer or any other problem using 'rendevzous' synchronization
 
 TODO
+
+---
+
+### Terminate and delay
+
+TODO
+paimti iš 4 reference
 
 ---
 
