@@ -377,31 +377,22 @@ procedure Protected_Object is
    N : Integer := 0;
 
    task T;
-
    task body T is
    begin
-      Put_Line
-        ("Task T will delay for 4 seconds...");
+      Put_Line ("Task T will delay for 4 seconds...");
       delay 4.0;
-
-      Put_Line
-        ("Task T will set Obj...");
+      Put_Line ("Task T will set Obj...");
       Obj.Set (5);
-
-      Put_Line
-        ("Task T has just set Obj...");
+      Put_Line ("Task T has just set Obj...");
    end T;
 begin
-   Put_Line
-     ("Main application will get Obj...");
+   Put_Line ("Main application will get Obj...");
    Obj.Get (N);
-
-   Put_Line
-     ("Main application has retrieved Obj...");
-   Put_Line
-     ("Number is: " & Integer'Image (N));
+   Put_Line ("Main application has retrieved Obj...");
+   Put_Line ("Number is: " & Integer'Image (N));
 
 end Protected_Object;
+
 
 ```
 
