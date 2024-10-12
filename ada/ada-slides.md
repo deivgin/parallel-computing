@@ -2,7 +2,7 @@
 marp: true
 ---
 
-# Ada's task and synchonization capabilites
+# Parallel computing with Ada programming language
 
 Deividas Gineitis
 Dominykas Pošiūnas
