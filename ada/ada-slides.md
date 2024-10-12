@@ -13,18 +13,18 @@ Dominykas Pošiūnas
 
 - Ada history.
 - Ada features, usage and syntax.
-- Ada's task and synchonization capabilites.
+- Ada's task and synchronization capabilities.
 
 ---
 
-### The history of Ada (1/2)
+## The history of Ada (1/2)
 
 - The Department of Defense (Dod) study in the early and middle 1970s indicated that enormous saving in software costs (about 24 billion. $ between 1983 and 1999) might be achieved if the Dod used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
 - An international competition was held to design a language based on Dod’s requirements.
 
 ---
 
-### The history of Ada (2/2)
+## The history of Ada (2/2)
 
 - The winning proposal was programming language, originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France. With some minor modifications, this language referred to as **Ada** was adopted as an American National Standards Institute (ANSI) standard in 1983 (Ada 83).
 - Major Ada versions include Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
@@ -32,16 +32,20 @@ Dominykas Pošiūnas
 
 ---
 
-### Ada major features
+## Ada major features
 
-- Ada is a structured, statically typed, imperative, and object-oriented high-level programming language, inspired by Pascal and other languages.
+- Ada is a structured, statically (and strong) typed, imperative, and multi-paradigm high-level programming language.
 - Designed for embedded and real-times systems, focused on making bugs almost non-existent.
-- Major features of Ada include:
-Strong typing, runtime checking, parallel processing (tasks, synchronous message passing), exception handling, OOP, polymorphism.
+- Big five structural elements:
+  - Packages - groups, units of compilations
+  - Subprograms - procedures, functions - reusable sequences of instructions
+  - Generics - arbitrary type packages that meet some requirement
+  - Tasks - operations done in parallel
+  - Protected objects - coordinate shared data
 
 ---
 
-### Common uses
+## Common uses
 
 - Avionics (e.g. Airbus A380 flight control and navigation systems).
 - Railways (e.g. Paris Metro).
@@ -51,134 +55,46 @@ Strong typing, runtime checking, parallel processing (tasks, synchronous message
 
 ---
 
-### The big five structural elements
-
-Ada programs are organized with main 5 elements:
-
-- Packages - groups, units of compilations
-- Subprograms - procedures, functions - reusable sequences of instructions
-- Generics - arbitrary type packages that meet some requirement
-- Tasks - operations done in parallel
-- Protected objects - coordinate shared data
-
----
-
-### Hello World
+## Hello World
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
--- The `with` clause makes the Ada.Text_IO package available in this procedure.
--- The `use` clause allows direct access to Text_IO's subprograms, like Put_Line,
--- without needing to prefix them with Ada.Text_IO.
 
 procedure Greet is
--- This defines the procedure named `Greet`. It doesn't take any parameters.
 
 begin
-   -- The body of the procedure starts here.
-
-   -- Print "Hello, World!" to the screen
    Put_Line ("Hello, World!");
-   -- The Put_Line subprogram prints the string "Hello, World!" to the standard output (console).
 
 end Greet;
--- The procedure ends here.
 ```
 
 ---
 
-### Tasks in Ada
+## Concurrency
 
-- A thread in Ada is called "Task" and is declared using the keyword _task_.
-- The task implementation is specified in a _task body_ block.
-- The main application is itself a task and can be referenced as a "master task".
-- Tasks may synchronize with the main application but may also process information completely independently from the main application.
-- Multithreading in Ada might be called "Tasking".
+Ada has a built in concurrency feature that can be achieved with `Tasking`
 
----
+Tasking consists of two main parts:
 
-### Task declaration
-
-- Simple task:
-
-```ada
-task T; --  Simple task declaration
-```
-
-```ada
-task T is --  Simple task declaration
-   --  declarations of exported identifiers
-end T
-```
-
-- Task type:
-
-```ada
-task type TT; --  Task type declaration
-```
-
-```ada
-task type TT is --  Task type declaration
-   --  declarations of exported identifiers
-end TT;
-```
-
-The difference between simple tasks and task types is that task types don't create actual tasks.
+1. Tasks
+2. Protected objects
 
 ---
 
-### Simple task example in Ada (1)
+## Tasks
 
-- master and T tasks runs concurrently.
+- Tasks are applications that are run concurrently to the main application. In other languages they might be called `Threads` and tasking itself can be called `multithreading`.
+- Tasks are synchronized with the main application, but can process information separately from the main Task.
+- The main application itself is a task, often called "master task" and tasks defined in it can be called subtasks.
+
+---
+
+## Task example
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
 
-procedure Show_Simple_Task is
-   task T;
-
-   task body T is
-   begin
-      Put_Line ("In task T");
-   end T;
-begin
-   Put_Line ("In main");
-end Show_Simple_Task;
-```
-
----
-
-### Task type example in Ada (1)
-
-- master and T tasks also runs concurrently.
-
-```ada
-with Ada.Text_IO; use Ada.Text_IO;
-
-procedure Show_Simple_Task_Type is
-   task type TT;
-
-   task body TT is
-   begin
-      Put_Line ("In task type TT");
-   end TT;
-
-   A_Task : TT;
-begin
-   Put_Line ("In main");
-end Show_Simple_Task_Type;
-```
-
----
-
-### Simple task example in Ada (2)
-
-- master, T and T2 tasks runs concurrently.
-
-```ada
-with Ada.Text_IO; use Ada.Text_IO;
-
-procedure Show_Simple_Tasks is
+procedure Tasking is
    task T;
    task T2;
 
@@ -191,10 +107,64 @@ procedure Show_Simple_Tasks is
    begin
       Put_Line ("In task T2");
    end T2;
-
 begin
    Put_Line ("In main");
-end Show_Simple_Tasks;
+end Tasking;
+
+```
+
+---
+
+## Synchronization
+
+- While master task and its subtasks are executed separately, the master task does not terminate until all of his subtasks have finished executing.
+- This provides simple synchronization between master task and subtasks.
+- The master task will wait for tasks in packages to execute before terminating.
+
+---
+
+### Synchronization example (1/2)
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Show_Simple_Sync is
+   task T;
+   task body T is
+   begin
+      for I in 1 .. 10 loop
+         Put_Line ("hello");
+      end loop;
+   end T;
+begin
+   null;
+end Show_Simple_Sync;
+```
+
+---
+
+### Synchronization example (2/2)
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+package body Sub_Task is
+   task body T is
+   begin
+      for I in 1 .. 10 loop
+         Put_Line ("hello");
+      end loop;
+   end T;
+end Sub_Task;
+```
+
+```ada
+with Sub_Task;
+
+procedure Main is
+begin
+   null;
+end Main;
 ```
 
 ---
@@ -207,7 +177,7 @@ Data race condition - two or more threads or processes access the same shared me
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Data_Race is
-   Shared_Counter : Integer := 0;  -- Shared variable
+   Shared_Counter : Integer := 0;
 
    task T1;
 
@@ -229,83 +199,35 @@ end Data_Race;
 
 ---
 
-### Simple synchronization
+## Rendezvous synchronization (1/2)
 
-- All tasks will run when main procedure starts (no start).
-- The main terminates only if all tasks terminate (no join).
-
-```ada
-with Ada.Text_IO; use Ada.Text_IO;
-
-procedure Show_Simple_Sync is
-   task T;
-   task body T is
-   begin
-      for I in 1 .. 10 loop
-         Put_Line ("hello");
-      end loop;
-   end T;
-begin
-   null;
-   --  Will wait here until all tasks
-   --  have terminated
-end Show_Simple_Sync;
-```
+- With ada we not only get automatic synchronization, but we are also able to control and define it at will.
+- This can be done with custom synchronization points using the keyword `entry`.
+- In the task body, you specify where the task will accept entry calls by using the keyword `accept`.
+- For each `entry` point there is corresponding `accept` statement.
 
 ---
 
-### Custom synchonization 'entry-accept' (1)
-
-- Task may export something for other task to use (to call). They can be called as custom synchronization points.
-- Custom synchronization points can be defined with keyword _entry_.
-- Entry points are defined in the task declaration. For example:
-
-```ada
-task T is
-   entry Start;
-end T;
-```
-
----
-
-### Custom synchronization 'entry-accept' (2)
-
-- In the task body, you specify where the task will accept entry calls by using the keyword _accept_.
-- For each entry point there is corresponding accept statment.
-- The accept block can be reffered as _rendezvous_ section.
- For example:
-
-```ada
-task body T is
-begin
-   accept Start;
-   --  This is rendezvous section
-   Put_Line ("In T");
-end T;
-```
-
----
-
-### Custom synchronization 'entry-accept' (3)
+### Rendezvous synchronization (2/2)
 
 Tasks run independently until either:
 
 - An accept statement.
-Waits for someone to call this entry, then proceeds to the rendezvous section. After this, both tasks execute their ways.
+  Waits for someone to call this entry, then proceeds to the rendezvous section.
+  After this, both tasks execute their ways.
 - An entry call.
-Waits for corresponding task reaching its accept statement, then proceeds to the randezvous section. After this, both tasks execute their ways.
+  Waits for corresponding task reaching its accept statement, then proceeds to the rendezvous section. After this, both tasks execute their ways.
 
 This is synchronous communication.
 
 ---
 
-### 'entry-accept' synchronization example
+### 'entry-accept' synchronization example (1/2)
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
 
 procedure Show_Rendezvous is
-
    task T is
       entry Start;
    end T;
@@ -313,35 +235,79 @@ procedure Show_Rendezvous is
    task body T is
    begin
       accept Start;
-      --     ^ Waiting for somebody
-      --       to call the entry
-
       Put_Line ("In T");
    end T;
 
 begin
    Put_Line ("In Main");
-
-   --  Calling T's entry:
    T.Start;
 end Show_Rendezvous;
 ```
 
 ---
 
-### 'rendezvous' synchronization example explanation
+### 'entry-accept' synchronization example (2/2)
 
-- The task T is declared with an entry point called "Start".
-- T will pause and wait for the main program to call an entry point.
-- When the main program calls _T.Start_, it synchronizes with the accept statement in task T.
-- _accept Start_ is where T waits for entry call from the main procedure.
-- The result - "In Main" will always be printed before "In T"
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 
----
+procedure Temperature_Converter is
+   Celsius_Temperature : Float;
+   Fahrenheit_Temperature : Float;
 
-### Reader-writer or Consumer-producer or any other problem using 'rendevzous' synchronization
+   type Temperature_Array is array (1 .. 5) of Float;
+   Fixed_Temperatures : Temperature_Array := (0.0, 20.0, 37.5, 15.0, 30.0);
 
-TODO
+   task Producer is
+      entry Produce (Temp : out Float);
+   end Producer;
+
+   task Consumer is
+      entry Consume (Temp : Float);
+   end Consumer;
+
+   task body Producer is
+   begin
+      for I in Fixed_Temperatures'Range loop
+         accept Produce (Temp : out Float) do
+            Celsius_Temperature := Fixed_Temperatures (I);
+            Put ("Produced Temperature: ");
+            Put (Celsius_Temperature, Fore => 1, Aft => 1, Exp => 0);
+            Put_Line (" °C");
+            Temp := Celsius_Temperature;
+         end Produce;
+      end loop;
+   end Producer;
+
+   task body Consumer is
+   begin
+      for I in Fixed_Temperatures'Range loop
+         accept Consume (Temp : Float) do
+            Fahrenheit_Temperature := (Temp * 9.0 / 5.0) + 32.0;
+            Put ("Consumed Temperature: ");
+            Put (Temp, Fore => 1, Aft => 1, Exp => 0);
+            Put (" °C -> ");
+            Put (Fahrenheit_Temperature, Fore => 1, Aft => 1, Exp => 0);
+            Put_Line (" °F");
+         end Consume;
+      end loop;
+   end Consumer;
+
+begin
+   for I in Fixed_Temperatures'Range loop
+      declare
+         Temp : Float;
+      begin
+         Producer.Produce (Temp);
+         Consumer.Consume (Temp);
+      end;
+   end loop;
+
+   Put_Line ("Temperature conversion completed.");
+end Temperature_Converter;
+
+```
 
 ---
 
@@ -352,16 +318,23 @@ paimti iš 4 reference
 
 ---
 
-### Protected objects
+## Protected objects
 
-In Ada, protected objects are a concurrency control mechanism designed to safely encapsulate and manage shared data.
+- In Ada, protected objects are a concurrency control mechanism designed to safely encapsulate and manage shared data.
+- Protected objects encapsulate data in their private part. Data is shared among tasks but can only be accessed via protected operations.
+- Ada ensures that when a task is executing a protected operation, no other task can interfere, making it thread-safe by default.
+- Protected procedures and functions are similar to getters and setters in object-oriented programming.
+
+---
+
+### Protected object example (1/2)
 
 ```ada
 protected Obj is
-    procedure Set(Value : Integer);  -- Setter-like operation
-    function Get return Integer;     -- Getter-like operation
+    procedure Set(Value : Integer);
+    function Get return Integer;
 private
-    Local : Integer;                 -- Protected data
+    Local : Integer;
 end Obj;
 
 protected body Obj is
@@ -379,32 +352,65 @@ end Obj;
 
 ---
 
-### Logic of Protected objects
+### Protected object example (2/2)
 
-- Protected objects encapsulate data in their private part. Data is shared among tasks but can only be accessed via protected operations.
-- Ada ensures that when a task is executing a protected operation, no other task can interfere, making it thread-safe by default.
-- Protected procedures and functions are similar to getters and setters in object-oriented programming.
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
 
----
+procedure Protected_Object is
 
-### Protected objects in Java?
+   protected Obj is
+      procedure Set (V : Integer);
+      entry Get (V : out Integer);
+   private
+      Local  : Integer;
+      Is_Set : Boolean := False;
+   end Obj;
 
-In Java, the concept closest to protected objects in Ada can be implemented using synchronized methods or synchronized blocks, which are used to control access to shared data among multiple threads
+   protected body Obj is
+      procedure Set (V : Integer) is
+      begin
+         Local := V;
+         Is_Set := True;
+      end Set;
 
-```java
-public class SharedResource {
-    private int value;
+      entry Get (V : out Integer)
+        when Is_Set is
+      begin
+         V := Local;
+         Is_Set := False;
+      end Get;
+   end Obj;
 
-    // Synchronized setter (like Ada's protected procedure Set)
-    public synchronized void setValue(int newValue) {
-        this.value = newValue;
-    }
+   N : Integer := 0;
 
-    // Synchronized getter (like Ada's protected function Get)
-    public synchronized int getValue() {
-        return this.value;
-    }
-}
+   task T;
+
+   task body T is
+   begin
+      Put_Line
+        ("Task T will delay for 4 seconds...");
+      delay 4.0;
+
+      Put_Line
+        ("Task T will set Obj...");
+      Obj.Set (5);
+
+      Put_Line
+        ("Task T has just set Obj...");
+   end T;
+begin
+   Put_Line
+     ("Main application will get Obj...");
+   Obj.Get (N);
+
+   Put_Line
+     ("Main application has retrieved Obj...");
+   Put_Line
+     ("Number is: " & Integer'Image (N));
+
+end Protected_Object;
+
 ```
 
 ---
@@ -416,4 +422,3 @@ public class SharedResource {
 [3] <https://youtu.be/YPD9U4Wuh5A?si=YxNWNLj57tAQoIne>
 [4] <https://www.youtube.com/watch?v=ZcdCDEhkbjU>
 [5] <https://www.youtube.com/watch?v=RjbrUbp1Xo4>
-[6]
