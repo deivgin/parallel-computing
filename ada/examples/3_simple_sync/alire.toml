@@ -1,4 +1,4 @@
-name = "my_hello_world"
+name = "simple_sync"
 description = ""
 version = "0.1.0-dev"
 
@@ -9,4 +9,4 @@ licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
 website = ""
 tags = []
 
-executables = ["my_hello_world"]
+executables = ["simple_sync"]

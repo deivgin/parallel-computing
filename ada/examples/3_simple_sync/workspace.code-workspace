@@ -5,6 +5,6 @@
     }
   ],
   "settings": {
-    "ada.projectFile": "my_hello_world.gpr"
+    "ada.projectFile": "simple_sync.gpr"
   }
 }
