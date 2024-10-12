@@ -1,0 +1,10 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "ada.projectFile": "temperature_converter.gpr"
+  }
+}
