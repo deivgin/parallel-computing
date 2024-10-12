@@ -9,14 +9,6 @@ Dominykas Pošiūnas
 
 ---
 
-## Content
-
-- Ada history.
-- Ada features, usage and syntax.
-- Ada's task and synchronization capabilities.
-
----
-
 ## The history of Ada (1/2)
 
 - The Department of Defense (Dod) study in the early and middle 1970s indicated that enormous saving in software costs (about 24 billion. $ between 1983 and 1999) might be achieved if the Dod used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
