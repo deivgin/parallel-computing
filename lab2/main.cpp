@@ -11,10 +11,10 @@ public:
     void waitBarrier() {
         std::unique_lock<std::mutex> lock(mtx);
         int currentGeneration = counter;
-        ++counter;
+        ++waiting;
 
-        if (counter == threadCount) {
-            counter = 0;
+        if (waiting == threadCount) {
+            waiting = 0;
             ++counter;
             cv.notify_all();
         } else {
