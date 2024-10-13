@@ -347,8 +347,62 @@ TODO
 
 ### Terminate and delay
 
-TODO
-paimti iš 4 reference
+- The _terminate_ statement terminates the task
+that executes this terminate statement.
+- The _delay_ statement suspends the task for at least seconds provided.
+- The _delay_ statment might introduce time drift. In those cases _delay until_ statement, which accepts a precise time for the end of the delay.
+
+---
+
+### The select statment (1)
+
+The select statement in Ada is a control structure that manages communication between tasks, handling concurrency and synchronization. It allows a task to wait for multiple possible communications and choose between them based on availability.
+
+- When select is used in a **called task**, it allows multi-way choices known as _selective-accepts_.
+- When select is used in a **calling task**, it allows two-way choices known  as _conditional entry calls_ and _timed entry calls_.
+
+---
+
+### The select statment (2)
+
+```ada
+select
+   -- select_alterantive
+or
+   -- select_alternative
+or
+   -- select_alternative
+else
+   -- sequence_of_statments
+end select
+
+```
+
+- or and else blocks are optional in the select statment.
+
+---
+
+### The select statment (3)
+
+- Each select_alternative may be an _accept_, a _delay_ followed by some other statments, or a _terminate_.
+- A select_alternative shall contain at least one _accept_.
+- In addition, it can contain (1) at most one _terminate_, (2) one ore more _delay_, or (3) an else. Note that these three possibilites are mutually exclusive (if you use _delay_ you should not use _terminate_ or else).
+- If several _accept_ blocks are available, one of them is selected arbitrarily.
+- The _delay_ is selected when its expiration time is reached if no other _accept_ or _delay_ can be selected prior to the expiration time. The else part is selected and its sequence of statements are executed if no _accept_ can immediately be selected.
+
+---
+
+### Select loop example
+
+- There's no limit to the number of times an entry can be accepted. We could even create an infinite loop in the task and accept calls to the same entry over and over again. An infinite loop, however, prevents the subtask from finishing, so it blocks its master task when it reaches the end of its processing.
+
+- Therefore, a loop containing _accept_ statements in a task body can be used in conjunction with a
+
+```ada
+select ... or terminate
+```
+
+- In simple terms, this statement allows its master task to automatically terminate the subtask when the master construct reaches its end.
 
 ---
 
