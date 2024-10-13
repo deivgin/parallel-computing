@@ -12,14 +12,14 @@ Dominykas Pošiūnas
 
 ## The history of Ada (1/2)
 
-- The Department of Defense (Dod) study in the early and middle 1970s indicated that enormous saving in software costs (about 24 billion. $ between 1983 and 1999) might be achieved if the Dod used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
-- An international competition was held to design a language based on Dod’s requirements.
+- The Department of Defense (DoD) study in the early and middle 1970s indicated that enormous saving in software costs (about $24 billion between 1983 and 1999) might be achieved if the DoD used one common programming language for all its applications instead of 450 programming languages and incompatible dialects used by its programmers.
+- An international competition was held to design a language based on DoD’s requirements.
 
 ---
 
 ## The history of Ada (2/2)
 
-- The winning proposal was programming language, originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France. With some minor modifications, this language referred to as **Ada** was adopted as an American National Standards Institute (ANSI) standard in 1983 (Ada 83).
+- The winning proposal was a programming language, originally developed in the early 1980s by a team led by Dr. Jean Ichbiah in France. With some minor modifications, this language, referred to as **Ada**, was adopted as an American National Standards Institute (ANSI) standard in 1983 (Ada 83).
 - Major Ada versions include Ada 83, Ada 95, Ada 05 and Ada 12 (the most recent).
 - The name “Ada” is not an acronym. It was chosen in honor of Augusta Ada Lovelace (1815-1852), a mathematician who is sometimes regarded as the world’s first programmer.
 
@@ -29,7 +29,7 @@ Dominykas Pošiūnas
 
 - Ada is a structured, statically (and strong) typed, imperative, and multi-paradigm high-level programming language.
 - Designed for embedded and real-times systems, focused on making bugs almost non-existent.
-- Big five structural elements:
+- The big five structural elements:
   - Packages - groups, units of compilations
   - Subprograms - procedures, functions - reusable sequences of instructions
   - Generics - arbitrary type packages that meet some requirement
@@ -217,7 +217,7 @@ end Data_Race;
 
 ## Synchronization
 
-- While master task and its subtasks are executed separately, the master task does not terminate until all of his subtasks have finished executing.
+- While master task and its subtasks are executed separately, the master task does not terminate until all of its subtasks have finished executing.
 - This provides simple synchronization between master task and subtasks.
 - The master task will wait for tasks in packages to execute before terminating.
 
@@ -295,7 +295,7 @@ end T;
 
 - For each `entry` point there is a corresponding `accept` statement.
 - In the task body, you specify where the task will accept entry calls by using the keyword `accept`.
-- The accept block can be reffered as **_rendezvous_** section.
+- The accept block can be reffered as the **_rendezvous_** section.
 
 ```ada
 task body T is
@@ -504,11 +504,11 @@ end Protected_Object;
 - The `terminate` statement terminates the task
 that executes this terminate statement.
 - The `delay` statement suspends the task for at least seconds provided.
-- The `delay` statment might introduce time drift. In those cases `delay until` statement, which accepts a precise time for the end of the delay.
+- The `delay` statement might introduce time drift. In those cases `delay until` statement, which accepts a precise time for the end of the delay.
 
 ---
 
-### The select statment (1/3)
+### The select statement (1/3)
 
 The `select` statement in Ada is a control structure that manages communication between tasks, handling concurrency and synchronization.
 
@@ -516,36 +516,36 @@ It allows a task to wait for multiple possible communications and choose between
 
 ---
 
-### The select statment (2/3)
+### The select statement (2/3)
 
 ```ada
 select
-   -- select_alterantive
+   -- select_alternative
 or
    -- select_alternative
 or
    -- select_alternative
 else
-   -- sequence_of_statments
+   -- sequence_of_statements
 end select
 
 ```
 
-- `or` and `else` blocks are optional in the `select` statment.
+- `or` and `else` blocks are optional in the `select` statement.
 
 ---
 
-### The select statment (3/3)
+### The select statement (3/3)
 
-- Each _select_alternative_ may be an `accept`, a `delay` followed by some other statments, or a `terminate`.
+- Each _select_alternative_ may be an `accept`, a `delay` followed by some other statements, or a `terminate`.
 - A _select_alternative_ shall contain at least one `accept`.
-- In addition, _select_alternative_ can contain (1) at most one `terminate`, (2) one ore more `delay`, or (3) an `else`. These possibilites are mutually exclusive (e.g. if you use `delay` you should not use `terminate` or `else`).
+- In addition, _select_alternative_ can contain (1) at most one `terminate`, (2) one or more `delay`, or (3) an `else`. These possibilites are mutually exclusive (e.g. if you use `delay` you should not use `terminate` or `else`).
 - If several `accept` blocks are available, one of them is selected arbitrarily.
 - The `delay` is selected when its expiration time is reached if no other `accept` or `delay` can be selected prior to the expiration time. The `else` part is selected and its sequence of statements are executed if no `accept` can immediately be selected.
 
 ---
 
-### The main forms of the select statment
+### The main forms of the select statement
 
 There are multiple commonly used forms of the select statement:
 
@@ -625,7 +625,7 @@ end select;
 
 ### Terminating select statement example (1/2)
 
-Problem: There's no limit to the number of times an entry can be accepted. We could even create an infinite loop in the task and accept calls to the same entry over and over again. An infinite loop, however, prevents the subtask from finishing, so it blocks its master task when it reaches the end of its processing.
+**Problem**: There's no limit to the number of times an entry can be accepted. We could even create an infinite loop in the task and accept calls to the same entry over and over again. An infinite loop, however, prevents the subtask from finishing, so it blocks its master task when it reaches the end of its processing.
 
 ---
 
