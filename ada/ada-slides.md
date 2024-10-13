@@ -411,13 +411,6 @@ end Temperature_Converter;
 
 ---
 
-### Terminate and delay
-
-TODO
-paimti iš 4 reference
-
----
-
 ## Protected objects
 
 - In Ada, protected objects are a concurrency control mechanism designed to safely encapsulate and manage shared data.
@@ -502,6 +495,189 @@ begin
 end Protected_Object;
 
 
+```
+
+---
+
+### Terminate and delay
+
+- The `terminate` statement terminates the task
+that executes this terminate statement.
+- The `delay` statement suspends the task for at least seconds provided.
+- The `delay` statment might introduce time drift. In those cases `delay until` statement, which accepts a precise time for the end of the delay.
+
+---
+
+### The select statment (1/3)
+
+The `select` statement in Ada is a control structure that manages communication between tasks, handling concurrency and synchronization.
+
+It allows a task to wait for multiple possible communications and choose between them based on availability.
+
+---
+
+### The select statment (2/3)
+
+```ada
+select
+   -- select_alterantive
+or
+   -- select_alternative
+or
+   -- select_alternative
+else
+   -- sequence_of_statments
+end select
+
+```
+
+- `or` and `else` blocks are optional in the `select` statment.
+
+---
+
+### The select statment (3/3)
+
+- Each _select_alternative_ may be an `accept`, a `delay` followed by some other statments, or a `terminate`.
+- A _select_alternative_ shall contain at least one `accept`.
+- In addition, _select_alternative_ can contain (1) at most one `terminate`, (2) one ore more `delay`, or (3) an `else`. These possibilites are mutually exclusive (e.g. if you use `delay` you should not use `terminate` or `else`).
+- If several `accept` blocks are available, one of them is selected arbitrarily.
+- The `delay` is selected when its expiration time is reached if no other `accept` or `delay` can be selected prior to the expiration time. The `else` part is selected and its sequence of statements are executed if no `accept` can immediately be selected.
+
+---
+
+### The main forms of the select statment
+
+There are multiple commonly used forms of the select statement:
+
+1. Selective accept.
+2. Timed entry call.
+3. Asynchronous transfer of control.
+4. Terminating select statement.
+
+---
+
+### Selective accept
+
+Allows a task to accept one of several possible entries.
+
+```ada
+select
+   accept Request1 do
+      -- Handle Request1
+   end;
+or
+   accept Request2 do
+      -- Handle Request2
+   end;
+end select;
+```
+
+---
+
+### Timed entry call
+
+Allows a task to wait for an entry call but only for a specified amount of time.
+
+```ada
+select
+   accept Some_Entry do
+      -- Handle entry call
+   end;
+or
+   delay 5.0;
+   -- Handle timeout case
+end select;
+```
+
+---
+
+### Asynchronous transfer of control
+
+Allows a task to perform an ongoing activity and react if a specified event occurs.
+
+```ada
+select
+   delay 10.0;
+   -- After delay, perform some action
+then abort
+   -- Some ongoing activity that might be aborted
+   Do_Something;
+end select;
+```
+
+---
+
+### Terminating select statement
+
+Allows a task to choose among alternative actions, including the ability to terminate itself when certain conditions are met.
+
+E.g. This statement allows master task to automatically terminate the subtask when the master construct reaches its end.
+
+```ada
+select
+   -- alternative actions
+or
+   terminate;
+end select;
+```
+
+---
+
+### Terminating select statement example (1/2)
+
+Problem: There's no limit to the number of times an entry can be accepted. We could even create an infinite loop in the task and accept calls to the same entry over and over again. An infinite loop, however, prevents the subtask from finishing, so it blocks its master task when it reaches the end of its processing.
+
+---
+
+### Terminating select statement example (2/2)
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Show_Rendezvous_Loop is
+
+   task T is
+      entry Reset;
+      entry Increment;
+   end T;
+
+   task body T is
+      Cnt : Integer := 0;
+   begin
+      loop
+         select
+            accept Reset do
+               Cnt := 0;
+            end Reset;
+            Put_Line ("Reset");
+         or
+            accept Increment do
+               Cnt := Cnt + 1;
+            end Increment;
+            Put_Line ("In T's loop ("
+                      & Integer'Image (Cnt)
+                      & ")");
+         or
+            terminate;
+         end select;
+      end loop;
+   end T;
+
+begin
+   Put_Line ("In Main");
+
+   for I in 1 .. 4 loop
+      --  Calling T's entry multiple times
+      T.Increment;
+   end loop;
+
+   T.Reset;
+   for I in 1 .. 4 loop
+      --  Calling T's entry multiple times
+      T.Increment;
+   end loop;
+
+end Show_Rendezvous_Loop;
 ```
 
 ---
