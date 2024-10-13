@@ -1,0 +1,117 @@
+V "GNAT Lib v13"
+M P W=b
+P ZX
+
+RN
+RV NO_EXCEPTION_HANDLERS
+RV NO_EXCEPTIONS
+RV NO_FLOATING_POINT
+RV NO_IO
+RV NO_IMPLICIT_CONDITIONALS
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_TASK_HIERARCHY
+RV NO_TASKING
+RV NO_DEFAULT_INITIALIZATION
+RV MAX_TASK_ENTRIES=1
+RV MAX_TASKS=1+
+
+U temperature_converter%b  temperature_converter.adb  76e4a568 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.float_text_io%s	a-flteio.ads		a-flteio.ali
+Z ada.real_time%s	a-reatim.adb		a-reatim.ali
+Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z system%s		system.ads		system.ali
+Z system.parameters%s	s-parame.adb		s-parame.ali
+Z system.soft_links%s	s-soflin.adb		s-soflin.ali
+Z system.task_info%s	s-tasinf.adb		s-tasinf.ali
+Z system.tasking%s	s-taskin.adb		s-taskin.ali
+Z system.tasking.rendezvous%s  s-tasren.adb	s-tasren.ali
+Z system.tasking.stages%s  s-tassta.adb		s-tassta.ali
+
+D ada.ads		20230727081304 76789da1 ada%s
+D a-except.ads		20230727081304 2a7d8d70 ada.exceptions%s
+D a-finali.ads		20230727081304 bf4f806b ada.finalization%s
+D a-flteio.ads		20230727081304 e18a47a0 ada.float_text_io%s
+D a-ioexce.ads		20230727081304 40018c65 ada.io_exceptions%s
+D a-reatim.ads		20230727081303 b89a10c3 ada.real_time%s
+D a-stream.ads		20230727081304 119b8fb3 ada.streams%s
+D a-string.ads		20230727081304 90ac6797 ada.strings%s
+D a-sttebu.ads		20230727081304 f1ad67a2 ada.strings.text_buffers%s
+D a-stuten.ads		20230727081304 c6ced0ae ada.strings.utf_encoding%s
+D a-tags.ads		20230727081304 9eaa38c6 ada.tags%s
+D a-textio.ads		20230727081304 5c2c6153 ada.text_io%s
+D a-tiflio.ads		20230727081304 9fe024a2 ada.text_io.float_io%s
+D a-unccon.ads		20230727081304 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20230727081304 15f799c2 interfaces%s
+D i-c.ads		20230727081304 5c5a6c17 interfaces.c%s
+D i-cstrea.ads		20230727081304 e53d8b8e interfaces.c_streams%s
+D system.ads		20230727081304 426dafb8 system%s
+D s-atacco.ads		20230727081304 903317eb system.address_to_access_conversions%s
+D s-crtl.ads		20230727081304 8a0692f8 system.crtl%s
+D s-exctab.ads		20230727081304 91bef6ef system.exception_table%s
+D s-ficobl.ads		20230727081304 dc5161d4 system.file_control_block%s
+D s-finroo.ads		20230727081304 4ff27390 system.finalization_root%s
+D s-linux.ads		20230727081303 34850a8c system.linux%s
+D s-multip.ads		20230727081304 38ac9f73 system.multiprocessors%s
+D s-oscons.ads		20240414073105 89271e13 system.os_constants%s
+D s-osinte.ads		20230727081303 e4f53740 system.os_interface%s
+D s-parame.ads		20230727081304 d494a4a6 system.parameters%s
+D s-putima.ads		20230727081304 17291fe4 system.put_images%s
+D s-secsta.ads		20230727081304 578279f5 system.secondary_stack%s
+D s-soflin.ads		20230727081304 df77073e system.soft_links%s
+D s-stache.ads		20230727081304 0b81c1fe system.stack_checking%s
+D s-stausa.ads		20230727081304 5be75682 system.stack_usage%s
+D s-stalib.ads		20230727081304 1c9580f6 system.standard_library%s
+D s-stoele.ads		20230727081304 ab5468e4 system.storage_elements%s
+D s-stoele.adb		20230727081304 8f5a9db6 system.storage_elements%b
+D s-tasinf.ads		20230727081303 528dde74 system.task_info%s
+D s-taspri.ads		20230727081303 4ec891e7 system.task_primitives%s
+D s-taprop.ads		20230727081303 6eefbe12 system.task_primitives.operations%s
+D s-taskin.ads		20230727081303 0ec7ab0b system.tasking%s
+D s-taprob.ads		20230727081303 acd6094d system.tasking.protected_objects%s
+D s-tpoben.ads		20230727081303 60ad3dae system.tasking.protected_objects.entries%s
+D s-tasren.ads		20230727081303 a67a9949 system.tasking.rendezvous%s
+D s-tassta.ads		20230727081303 cca55c94 system.tasking.stages%s
+D s-traent.ads		20230727081304 c81cbf8c system.traceback_entries%s
+D s-unstyp.ads		20230727081304 fa2a7f59 system.unsigned_types%s
+D s-wchcon.ads		20230727081304 d9032363 system.wch_con%s
+D temperature_converter.adb  20241013081203 cb42839b temperature_converter%b
+G a e
+G c Z b b [temperature_converter standard 4 11 none]
+X 1 ada.ads
+16K9*Ada 20e8 48|1r6 1r23 2r6 2r29
+X 4 a-flteio.ads
+20K13*Float_Text_IO[13|46] 48|2w10 2r33
+X 12 a-textio.ads
+58K13*Text_IO 787e16 48|1w10 1r27
+88I12*Field{integer}
+519U14*Put 48|24s13 37s13 39s13
+566U14*Put_Line 48|26s13 41s13 56s4
+X 13 a-tiflio.ads
+85U14*Put 48|25s13[4|20] 38s13[4|20] 40s13[4|20]
+87i7 Fore{12|88I12} 48|25r39[4|20] 38r24[4|20] 40r42[4|20]
+88i7 Aft{12|88I12} 48|25r50[4|20] 38r35[4|20] 40r53[4|20]
+89i7 Exp{12|88I12} 48|25r60[4|20] 38r45[4|20] 40r63[4|20]
+X 33 s-stausa.ads
+207U14*Initialize 208i<c,__gnat_stack_usage_initialize>22
+272U14*Output_Results 276i<c,__gnat_stack_usage_output_results>22
+X 48 temperature_converter.adb
+4U11*Temperature_Converter 4b11 57l5 57t26
+5f4 Celsius_Temperature{float} 23m13 25r18 27r21
+6f4 Fahrenheit_Temperature{float} 36m13 40r18
+8A9 Temperature_Array(float)<integer> 9r25
+9a4 Fixed_Temperatures{8A9} 21r16 23r36 34r16 47r13
+11t9 Producer 19b14 30l8 30t16 51r10
+12Y13 Produce 12<22 22b17 28l14 28t21 51s19
+12f22 Temp{float} 27m13 27r13
+15t9 Consumer 32b14 44l8 44t16 52r10
+16Y13 Consume 16>22 35b17 42l14 42t21 52s19
+16f22 Temp{float} 36r40 38r18
+21i11 I{integer} 23r56
+22f26 Temp{float}
+34i11 I{integer}
+35f26 Temp{float}
+47i8 I{integer}
+49f10 Temp{float} 51m28 52r28
+

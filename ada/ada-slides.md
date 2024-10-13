@@ -63,9 +63,9 @@ end Greet;
 
 ---
 
-## Concurrency
+## Concurrency in Ada
 
-Ada has a built in concurrency feature that can be achieved with `Tasking`
+Ada has a built-in concurrency feature that is referred to as **Tasking**.
 
 Tasking consists of two main parts:
 
@@ -74,20 +74,74 @@ Tasking consists of two main parts:
 
 ---
 
-## Tasks
+### Tasks in Ada
 
-- Tasks are applications that are run concurrently to the main application. In other languages they might be called `Threads` and tasking itself can be called `multithreading`.
-- Tasks are synchronized with the main application, but can process information separately from the main Task.
-- The main application itself is a task, often called "master task" and tasks defined in it can be called subtasks.
+- A thread of execution in Ada is called a task, and it is declared using the keyword `task`.  
+- The implementation of the task is defined in a `task body` block.  
+- The main application is itself considered a task and is often referred to as the **master task**.  
+- Tasks can synchronize with the main application (master task) or other tasks via **entries**, but they can also operate independently, processing information concurrently without interaction.
 
 ---
 
-## Task example
+### Task declaration
+
+Simple task:
+
+```ada
+task T; --  Simple task declaration
+```
+
+```ada
+task T is --  Simple task declaration
+   --  declarations of exported identifiers
+end T
+```
+
+Task type:
+
+```ada
+task type TT; --  Task type declaration
+```
+
+```ada
+task type TT is --  Task type declaration
+   --  declarations of exported identifiers
+end TT;
+```
+
+The difference between simple tasks and task types is that task types don't create actual tasks.
+
+---
+
+### Simple task example in Ada (1/2)
+
+- master and T tasks runs concurrently.
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
 
-procedure Tasking is
+procedure Show_Simple_Task is
+   task T;
+
+   task body T is
+   begin
+      Put_Line ("In task T");
+   end T;
+begin
+   Put_Line ("In main");
+end Show_Simple_Task;
+```
+
+---
+
+### Simple task example in Ada (2/2)
+
+- master, T and T2 tasks runs concurrently.
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Show_Simple_Tasks is
    task T;
    task T2;
 
@@ -100,64 +154,33 @@ procedure Tasking is
    begin
       Put_Line ("In task T2");
    end T2;
+
 begin
    Put_Line ("In main");
-end Tasking;
-
+end Show_Simple_Tasks;
 ```
 
 ---
 
-## Synchronization
+### Task type example in Ada (1)
 
-- While master task and its subtasks are executed separately, the master task does not terminate until all of his subtasks have finished executing.
-- This provides simple synchronization between master task and subtasks.
-- The master task will wait for tasks in packages to execute before terminating.
-
----
-
-### Synchronization example (1/2)
+- master and T tasks also runs concurrently.
 
 ```ada
 with Ada.Text_IO; use Ada.Text_IO;
 
-procedure Show_Simple_Sync is
-   task T;
-   task body T is
+procedure Show_Simple_Task_Type is
+   task type TT;
+
+   task body TT is
    begin
-      for I in 1 .. 10 loop
-         Put_Line ("hello");
-      end loop;
-   end T;
+      Put_Line ("In task type TT");
+   end TT;
+
+   A_Task : TT;
 begin
-   null;
-end Show_Simple_Sync;
-```
-
----
-
-### Synchronization example (2/2)
-
-```ada
-with Ada.Text_IO; use Ada.Text_IO;
-
-package body Sub_Task is
-   task body T is
-   begin
-      for I in 1 .. 10 loop
-         Put_Line ("hello");
-      end loop;
-   end T;
-end Sub_Task;
-```
-
-```ada
-with Sub_Task;
-
-procedure Main is
-begin
-   null;
-end Main;
+   Put_Line ("In main");
+end Show_Simple_Task_Type;
 ```
 
 ---
@@ -192,21 +215,105 @@ end Data_Race;
 
 ---
 
-## Rendezvous synchronization (1/2)
+## Synchronization
 
-- With ada we not only get automatic synchronization, but we are also able to control and define it at will.
-- This can be done with custom synchronization points using the keyword `entry`.
-- In the task body, you specify where the task will accept entry calls by using the keyword `accept`.
-- For each `entry` point there is corresponding `accept` statement.
+- While master task and its subtasks are executed separately, the master task does not terminate until all of his subtasks have finished executing.
+- This provides simple synchronization between master task and subtasks.
+- The master task will wait for tasks in packages to execute before terminating.
 
 ---
 
-### Rendezvous synchronization (2/2)
+### Synchronization example (1/2)
+
+- All tasks will run when main procedure starts (no start).
+- The main terminates only if all tasks terminate (no join).
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO;
+
+procedure Show_Simple_Sync is
+   task T;
+   task body T is
+   begin
+      for I in 1 .. 10 loop
+         Put_Line ("hello");
+      end loop;
+   end T;
+begin
+   null;
+end Show_Simple_Sync;
+```
+
+---
+
+### Synchronization example (2/2)
+
+```ada
+package Simple_Task is -- Package specification
+   task T;
+end Simple_Task;
+```
+
+```ada
+with Ada.Text_IO; use Ada.Text_IO; -- Package body implementation
+
+package body Sub_Task is
+   task body T is
+   begin
+      for I in 1 .. 10 loop
+         Put_Line ("hello");
+      end loop;
+   end T;
+end Sub_Task;
+```
+
+```ada
+with Sub_Task;
+
+procedure Main is
+begin
+   null;
+end Main;
+```
+
+---
+
+## Custom synchronization 'entry-accept' (1/3)
+
+- Task may export something for other task to use (to call).
+- This can be done with custom synchronization points using the keyword `entry`.
+
+```ada
+task T is
+   entry Start;
+end T;
+```
+
+---
+
+## Custom synchronization 'entry-accept' (2/3)
+
+- For each `entry` point there is a corresponding `accept` statement.
+- In the task body, you specify where the task will accept entry calls by using the keyword `accept`.
+- The accept block can be reffered as **_rendezvous_** section.
+
+```ada
+task body T is
+begin
+   accept Start;
+   --  This is rendezvous section
+   Put_Line ("In T");
+end T;
+```
+
+---
+
+### Custom synchronization 'entry-accept' (3/3)
 
 Tasks run independently until either:
 
 - An accept statement.
-  Waits for someone to call this entry, then proceeds to the rendezvous section.
+  Waits for someone to call this entry, then proceeds to the _rendezvous_ section.
   After this, both tasks execute their ways.
 - An entry call.
   Waits for corresponding task reaching its accept statement, then proceeds to the rendezvous section. After this, both tasks execute their ways.
