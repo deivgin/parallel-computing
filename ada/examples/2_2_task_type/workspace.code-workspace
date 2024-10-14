@@ -1,0 +1,10 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "ada.projectFile": "task_type.gpr"
+  }
+}

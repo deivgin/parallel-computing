@@ -1,6 +1,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
 
-procedure Show_Rendezvous_Loop is
+procedure Select_Loop is
 
    task T is
       entry Reset;
@@ -42,5 +42,4 @@ begin
       --  Calling T's entry multiple times
       T.Increment;
    end loop;
-
-end Show_Rendezvous_Loop;
+end Select_Loop;
