@@ -7,6 +7,3 @@ shared memory multithreaded parallel system and experimentally investigate the s
 application.
 
 ## Problem
-
-This program seeks to use bubble sort algorithm to sort massive amount of data - 1 mil random integer numbers to be precise.
-Typically, this is done in about 0.000166 milliseconds. If there 
