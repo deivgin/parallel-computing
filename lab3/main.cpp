@@ -1,39 +1,29 @@
-#include <iostream>
 #include <vector>
+#include <random>
+#include <iostream>
 
-void bubbleSort(std::vector<int>& arr) {
-    const unsigned long n = arr.size();
+std::vector<int> generateLargeDataset(const size_t size, const int min = 1, const int max = 1000000) {
+    std::vector<int> dataset(size);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
 
-    for (int i = 0; i < n - 1; i++) {
-        bool swapped = false;
-
-        for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                std::swap(arr[j], arr[j + 1]);
-                swapped = true;
-            }
-        }
-
-        if (!swapped)
-            break;
+    for (size_t i = 0; i < size; ++i) {
+        dataset[i] = dis(gen);
     }
+
+    return dataset;
 }
 
 int main() {
-    std::vector<int> arr = {64, 34, 25, 12, 22, 11, 90};
+    constexpr size_t size = 100000;
+    const std::vector<int> dataset = generateLargeDataset(size);
 
-    std::cout << "Original array: ";
-    for (const int num : arr)
-        std::cout << num << " ";
-    std::cout << std::endl;
-
-    bubbleSort(arr);
-
-    std::cout << "Sorted array: ";
-    for (const int num : arr)
-        std::cout << num << " ";
-    std::cout << std::endl;
+    std::cout << "Generated dataset (first 10 elements): ";
+    for (size_t i = 0; i < 10 && i < dataset.size(); ++i) {
+        std::cout << dataset[i] << " ";
+    }
+    std::cout << "\n";
 
     return 0;
 }
-
