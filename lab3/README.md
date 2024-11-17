@@ -10,26 +10,26 @@ application.
 
 ## Experiment:
 
-### Sequential bubble sort:
+In this experiment I wanted to find out what would be the average run time for each defined bubble sort algorithm.
 
-Time taken to sort with 1000 dataset: 0.005348 seconds
-Time taken to sort with 10000 dataset: 0.428394 seconds
-Time taken to sort with 100000 dataset: 41.6731 seconds
+Experiment details:
 
-### Parallel with 2 cores
+- Each algorithm was run 100 times.
+- Data set was 10000
+- For parallel algorithms 8 cores were used
 
-Time taken to sort with 1000 dataset: 0.017565 seconds
-Time taken to sort with 10000 dataset: 0.451674 seconds
-Time taken to sort with 100000 dataset: 21.1798 seconds
+### Bubble sort
 
-### Parallel with 4 cores
+Average time taken to sort with 10000 dataset: 0.420109 seconds
 
-Time taken to sort with 1000 dataset: 0.043706 seconds
-Time taken to sort with 10000 dataset: 0.611198 seconds
-Time taken to sort with 100000 dataset: 16.4869 seconds
+### Bubble sort with swapped flag:
 
-### Parallel with 8 cores
+Average time taken to sort with 10000 dataset: 0.421125 seconds
 
-Time taken to sort with 1000 dataset: 0.103566 seconds
-Time taken to sort with 10000 dataset: 1.0967 seconds
-Time taken to sort with 100000 dataset: 19.4803 seconds
+### Parallel bubble sort
+
+Average time taken to sort with 10000 dataset: 0.662394 seconds
+
+### Parallel bubble sort with swapped flag
+
+Average time taken to sort with 10000 dataset: 1.07725 seconds

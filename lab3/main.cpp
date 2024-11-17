@@ -6,34 +6,27 @@
 #include <fstream>
 #include <sstream>
 
-std::vector<int> generateDataset(const size_t size, const int min = 1, const int max = 1000000)
-{
-    std::vector<int> dataset(size);
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(min, max);
+void bubbleSort(std::vector<int>& dataset) {
+    const size_t size = dataset.size();
 
-    for (size_t i = 0; i < size; ++i)
-    {
-        dataset[i] = dis(gen);
+    for (size_t i = 0; i < size - 1; ++i) {
+        for (size_t j = 0; j < size - i - 1; ++j) {
+            if (dataset[j] > dataset[j + 1]) {
+                std::swap(dataset[j], dataset[j + 1]);
+            }
+        }
     }
-
-    return dataset;
 }
 
-void sequentialBubbleSort(std::vector<int>& arr)
-{
-    const size_t n = arr.size();
+void bubbleSortFlag(std::vector<int>& dataset){
+    const size_t size = dataset.size();
 
-    for (int i = 0; i < n - 1; i++)
-    {
+    for (int i = 0; i < size - 1; i++){
         bool swapped = false;
 
-        for (int j = 0; j < n - i - 1; j++)
-        {
-            if (arr[j] > arr[j + 1])
-            {
-                std::swap(arr[j], arr[j + 1]);
+        for (int j = 0; j < size - i - 1; j++){
+            if (dataset[j] > dataset[j + 1]){
+                std::swap(dataset[j], dataset[j + 1]);
                 swapped = true;
             }
         }
@@ -44,47 +37,75 @@ void sequentialBubbleSort(std::vector<int>& arr)
 
 }
 
-void parallelBubbleSort(std::vector<int>& arr)
-{
-    const size_t n = arr.size();
+void bubbleSortParallel(std::vector<int>& dataset) {
+    const size_t size = dataset.size();
+
+    for (size_t k = 0; k < size - 1; ++k) {
+        #pragma omp parallel for default(none) shared(dataset, size, k)
+        for (size_t i = k % 2; i < size- 1; i += 2)
+            if (dataset[i] > dataset[i + 1])
+                std::swap(dataset[i], dataset[i + 1]);
+    }
+}
+
+
+void bubbleSortParallelFlag(std::vector<int>& dataset) {
+    const size_t size = dataset.size();
     bool swapped = true;
 
-    for (size_t k = 0; swapped && k < n - 1; ++k)
-    {
+    for (size_t k = 0; swapped && k < size - 1; ++k) {
         swapped = false;
 
-        #pragma omp parallel num_threads(1)
+        #pragma omp parallel reduction(|:swapped)
         {
-            bool localSwapped = false;
-
-            #pragma omp for
-            for (size_t i = k % 2; i < n - 1; i += 2)
-            {
-                if (arr[i] > arr[i + 1])
-                {
-                    std::swap(arr[i], arr[i + 1]);
-                    localSwapped = true;
+            #pragma omp for schedule(static)
+            for (size_t i = k % 2; i < size - 1; i += 2) {
+                if (dataset[i] > dataset[i + 1]) {
+                    std::swap(dataset[i], dataset[i + 1]);
+                    swapped = true;
                 }
             }
-
-            #pragma omp atomic
-            swapped |= localSwapped;
         }
     }
 }
 
 int main()
 {
-    constexpr int DATA_SIZE = 1'000'000;
+    constexpr int DATA_SIZE = 10000;
+    constexpr int NUM_THREADS = 8;
+    constexpr int TEST_QUANTITY = 100;
 
-        std::vector<int> dataset = generateDataset(DATA_SIZE);
+    omp_set_num_threads(NUM_THREADS);
+
+    double average = 0;
+    std::vector<int> dataset(DATA_SIZE);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, 1000000);
+
+    for (int i = 0; i < TEST_QUANTITY; ++i) {
+        for (auto& val : dataset) {
+            val = dis(gen);
+        }
+
+        std::cout << "\rTest repetition: " << i + 1 << " / " << TEST_QUANTITY << std::flush;
 
         const auto start = std::chrono::high_resolution_clock::now();
-        parallelBubbleSort(dataset);
+        // bubbleSort(dataset);
+        // bubbleSortFlag(dataset);
+        // bubbleSortParallel(dataset);
+        bubbleSortParallelFlag(dataset);
         const auto end = std::chrono::high_resolution_clock::now();
         const std::chrono::duration<double> elapsed = end - start;
 
-        std::cout << "Time taken to sort with " << DATA_SIZE << " dataset: " << elapsed.count() << " seconds\n";
+        average += elapsed.count();
+    }
+
+    average /= TEST_QUANTITY;
+
+    std::cout << "\n";
+    std::cout << "Average time taken to sort with " << DATA_SIZE << " dataset: " << average << " seconds\n";
 
     return 0;
 }
