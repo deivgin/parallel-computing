@@ -3,47 +3,65 @@
 #include <chrono>
 #include <random>
 #include <omp.h>
+#include <fstream>
+#include <sstream>
 
-std::vector<int> generateDataset(const size_t size, const int min = 1, const int max = 1000000) {
+std::vector<int> generateDataset(const size_t size, const int min = 1, const int max = 1000000)
+{
     std::vector<int> dataset(size);
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(min, max);
 
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < size; ++i)
+    {
         dataset[i] = dis(gen);
     }
 
     return dataset;
 }
 
+void sequentialBubbleSort(std::vector<int>& arr)
+{
+    const size_t n = arr.size();
 
-void showProgramInfo(const size_t size) {
-    std::cout << "Dataset size: " << size << std::endl;
-
-    #pragma omp parallel
+    for (int i = 0; i < n - 1; i++)
     {
-        #pragma omp single
+        bool swapped = false;
+
+        for (int j = 0; j < n - i - 1; j++)
         {
-            std::cout << "Number of threads: " << omp_get_num_threads() << "\n";
+            if (arr[j] > arr[j + 1])
+            {
+                std::swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
         }
+
+        if (!swapped)
+            break;
     }
+
 }
 
-void parallelBubbleSort(std::vector<int>& arr) {
+void parallelBubbleSort(std::vector<int>& arr)
+{
     const size_t n = arr.size();
     bool swapped = true;
 
-    for (size_t k = 0; swapped && k < n - 1; ++k) {
+    for (size_t k = 0; swapped && k < n - 1; ++k)
+    {
         swapped = false;
 
-        #pragma omp parallel
+        #pragma omp parallel num_threads(1)
         {
             bool localSwapped = false;
 
             #pragma omp for
-            for (size_t i = k % 2; i < n - 1; i += 2) {
-                if (arr[i] > arr[i + 1]) {
+            for (size_t i = k % 2; i < n - 1; i += 2)
+            {
+                if (arr[i] > arr[i + 1])
+                {
                     std::swap(arr[i], arr[i + 1]);
                     localSwapped = true;
                 }
@@ -55,50 +73,18 @@ void parallelBubbleSort(std::vector<int>& arr) {
     }
 }
 
-void sequentialBubbleSort(std::vector<int>& arr) {
-    const size_t n = arr.size();
+int main()
+{
+    constexpr int DATA_SIZE = 1'000'000;
 
-    for (size_t i = 0; i < n - 1; ++i) {
-        bool swapped = false;
-        for (size_t j = 0; j < n - i - 1; ++j) {
-            if (arr[j] > arr[j + 1]) {
-                std::swap(arr[j], arr[j + 1]);
-                swapped = true;
-            }
-        }
-        if (!swapped) {
-            break;
-        }
-    }
-}
+        std::vector<int> dataset = generateDataset(DATA_SIZE);
 
-void runSequential(std::vector<int> arr) {
-    std::cout << "Sorting dataset sequentially...\n";
-    const auto start = std::chrono::high_resolution_clock::now();
-    sequentialBubbleSort(arr);
-    const auto end = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Time taken to sort sequentially: " << elapsed.count() << " seconds\n";
-}
+        const auto start = std::chrono::high_resolution_clock::now();
+        parallelBubbleSort(dataset);
+        const auto end = std::chrono::high_resolution_clock::now();
+        const std::chrono::duration<double> elapsed = end - start;
 
-void runParallel(std::vector<int> arr) {
-    std::cout << "Sorting dataset in parallel...\n";
-    const auto start = std::chrono::high_resolution_clock::now();
-    parallelBubbleSort(arr);
-    const auto end = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<double> elapsed = end - start;
-    std::cout << "Time taken to sort in parallel: " << elapsed.count() << " seconds\n";
-}
-
-int main() {
-    constexpr size_t size = 100'000;
-    showProgramInfo(size);
-
-    const auto sequentialSet = generateDataset(size);
-    const auto parallelSet = generateDataset(size);
-
-    runSequential(sequentialSet);
-    runParallel(parallelSet);
+        std::cout << "Time taken to sort with " << DATA_SIZE << " dataset: " << elapsed.count() << " seconds\n";
 
     return 0;
 }
