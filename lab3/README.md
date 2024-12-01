@@ -1,83 +1,214 @@
-# Bubble sort parallel implementation
+# Report: Parallel Algorithm Design and Implementation
 
-## Motivation
+## 1. Introduction
 
-The purpose of the assignment is to design and implement efficient parallel algorithm for bubble sort algorithm using
-shared memory multithreaded parallel system and experimentally investigate the speedup and scalability of the
-application.
+### 1.1 Problem Description
 
-## Problem
+This research explores parallelizing bubble sort across multiple CPU threads. While bubble sort is simple but
+inefficient (O(n^2) complexity), the study tests if running it on 8 cores in parallel can improve its performance. The
+focus is on measuring speed gains and scalability using shared-memory multithreading.
 
-Bubble sort is not an efficient algorithm with a complexity of O(n^2), which means that with large data sets it quickly becomes slow.
-So this projects goal is to see if parallelization could help and increase its efficiency.
+### 1.2 Objectives
 
-## Algorithm parallelization
+The objectives of this assignment are:
 
-Bubble sort can be created using the swapped flag or not. So for this project two versions of this sort were created.
-Both of them use the Odd and Even separation pattern in which we eliminate dependencies to adjacent elements.
-This odd even separation allows us to parallelize as we reduce the risk of race condition.
+- To design and implement a parallel version of the bubble sort algorithm.
+- To analyze how the algorithm’s workload can be divided into independent tasks suitable for multithreaded execution.
+- To experimentally measure the speedup achieved by parallelizing the algorithm.
+- To investigate the scalability of the parallel implementation and identify factors that influence its performance.
 
-For Thread control the OpenMP library was used to simplify thread creation and management.
+---
 
-## Experiment
+## 2. Parallelization Approach
 
-In this experiment I wanted to find out what would be the average run time for each defined bubble sort algorithm.
+### 2.1 Work Division
 
-Experiment details:
+For this bubble sort implementation work is divided using the Odd/Even methods. This approach separates bubble sort loop
+into two distinct parts - one that checks item sizes with the indexes being even and one with them being odd. This
+approach because these phases do not interfere with one another, so different threads can work independently,
 
-- Each algorithm was run 100 times.
-- Data set was 10000
-- System used was macbook pro m1 with 8 cores
+### 2.2 Sub-work Allocation
 
-### Bubble sort
+The division of work here works with cyclical allocation. Threads are give a specific part of the cycle to compute with
+the answer then being merged back in the shared data array.
 
-- Average time taken to sort with 10000 dataset: 0.420109 seconds
+### 2.3 Synchronization
 
-### Bubble sort with swapped flag
+The OpenMP library that is used for parallelization uses a barrier at the end of the for loop. This means that all work
+in this phase must be complete before moving on to another phase. Synchronisation happens:
 
-- Average time taken to sort with 10000 dataset: 0.421125 seconds
+- Within a phase - threads operate on independent pairs of elements, so no synchronization is needed during the loop
+  iterations.
+- Between phases - OpenMP’s implicit barrier ensures all threads complete their work before moving to the next phase.
+- Shared data - the main thread manages isEvenPhase, and there is no contention because it is updated sequentially
+  outside the parallel region.
 
-### Parallel bubble sort
+---
 
-- Average time taken to sort with 10000 dataset and 2 of cores: 0.414565 seconds
-- Average time taken to sort with 10000 dataset and 4 of cores: 0.459515 seconds
-- Average time taken to sort with 10000 dataset and 6 of cores: 0.51781 seconds
-- Average time taken to sort with 10000 dataset and 8 of cores: 0.658508 seconds
+## 3. Experimental Setup
+
+### 3.1 System Description
+
+Experiment has been done on macbook m1 pro machine that has 8 cores in total
+
+### 3.2 Experimental Parameters
+
+- Testing has been done with 10000, 50000, 10000, 200000 and 300000 randomly generated data sets.
+- For speed reference sequential run of bubble sort algorithm has been used.
+- Test was done with 2, 4, 6 and 8 cores.
+
+---
+
+## 4. Results and Analysis
+
+### 4.1 Results
+
+**Test run results sequentially:**
+
+| Dataset Count | Sequential Run (s) | 
+|---------------|--------------------|
+| 10000         | 0.420052           | 
+| 50000         | 10.429007          |
+| 100000        | 41.319766          | 
+| 200000        | 167.328850         | 
+| 300000        | 372.563921         | 
 
 ```mermaid
 xychart-beta
-    title "Parallel bubble sort"
-    x-axis "Cores" [2, 4, 6, 8]
-    y-axis "Time" 1 --> 0
-    line [0.414565, 0.459515, 0.51781, 0.658508]
-    line [0.414565, 0.459515, 0.51781, 0.658508]
+    title "Sequential bubble sort execution time"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Time" 1 --> 400
+    line "Sequential" [0.420052, 10.429007, 41.319766, 167.328850, 372.563921]
+    line "Reference Line" [0, 100, 200, 300, 400]
 ```
 
-### Parallel bubble sort with swapped flag
+**Test run results using 2 cores:**
 
-- Average time taken to sort with 10000 dataset and 2 of cores: 0.460546 seconds
-- Average time taken to sort with 10000 dataset and 4 of cores: 0.584587 seconds
-- Average time taken to sort with 10000 dataset and 6 of cores: 0.758808 seconds
-- Average time taken to sort with 10000 dataset and 8 of cores: 1.06499 seconds
+| Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
+|---------------|--------------------|------------------|---------|
+| 10000         | 0.420052           | 0.412430         | 1.02x   |
+| 50000         | 10.429007          | 5.825340         | 1.79x   |
+| 100000        | 41.319766          | 20.679956        | 2.00x   |
+| 200000        | 167.328850         | 78.722583        | 2.13x   |
+| 300000        | 372.563921         | 170.288452       | 2.19x   |
 
-- Average time taken to sort with 100000 dataset and 8 of cores: 17.2787 seconds
+- Red line - reference
+- Blue line - sequential
+- Green line - parallel
 
 ```mermaid
 xychart-beta
-    title "Parallel bubble sort with swapped flag"
-    x-axis "Cores" [2, 4, 6, 8]
-    y-axis "Time" 1.1 --> 0
-    line [0.460546, 0.584587, 0.758808, 1.06499]
+    title "Parallel bubble sort with 2 cores"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Time" 1 --> 400
+    line "Sequential" [0.420052, 10.429007, 41.319766, 167.328850, 372.563921]
+    line "Parallel" [0.412430, 5.825340, 20.679956, 78.722583, 170.288452]
+    line "Reference Line" [0, 100, 200, 300, 400]
 ```
 
-## Conclusions
+**Test run results using 4 cores:**
 
-The expectation for this experiment was to see a decrease in time after parallelization, uninformatively the results are opposite.
-Increase in cores increases the time it takes to compute each time. This could be due to:
+| Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
+|---------------|--------------------|------------------|---------|
+| 10000         | 0.420052           | 0.513024         | 0.82x   |
+| 50000         | 10.429007          | 5.074885         | 2.06x   |
+| 100000        | 41.319766          | 15.379939        | 2.69x   |
+| 200000        | 167.328850         | 50.761146        | 3.30x   |
+| 300000        | 372.563921         | 106.569182       | 3.50x   |
 
-- Bubble sort is hard to parallelize - each phase requires a sequential dependency.
-- As number of cores increases the synchronization between cores becomes more expensive. Thread creation and scheduling, barriers and load balancing are all expensive and inefficient in small data sets.
-- Parallelization could show increase in efficiency with large data sets, but bubble sort itself is not efficient as data increases.
+- Red line - reference
+- Blue line - sequential
+- Green line - parallel
 
-So my final conclusions would be that while it is plausible to parallelize this algorithm, it could only be useful at large data sets.
-But due to inherit inefficiencies of this algorithm and its time complexity with large datasets it is better to use a more efficient algorithm.
+```mermaid
+xychart-beta
+    title "Parallel bubble sort with 4 cores"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Time" 1 --> 400
+    line "Sequential" [0.420052, 10.429007, 41.319766, 167.328850, 372.563921]
+    line "Parallel" [0.513024, 5.074885, 15.379939, 50.761146, 106.569182]
+    line "Reference Line" [0, 100, 200, 300, 400]
+```
+
+**Test run results using 6 cores:**
+
+| Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
+|---------------|--------------------|------------------|---------|
+| 10000         | 0.420052           | 0.519214         | 0.81x   |
+| 50000         | 10.429007          | 4.962971         | 2.10x   |
+| 100000        | 41.319766          | 14.861962        | 2.78x   |
+| 200000        | 167.328850         | 47.126572        | 3.55x   |
+| 300000        | 372.563921         | 98.099047        | 3.80x   |
+
+- Red line - reference
+- Blue line - sequential
+- Green line - parallel
+
+```mermaid
+xychart-beta
+    title "Parallel bubble sort with 6 cores"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Time" 1 --> 400
+    line "Sequential" [0.412430, 10.429007, 41.319766, 167.328850, 372.563921]
+    line "Parallel" [0.519214, 4.962971, 14.861962, 47.126572, 98.099047]
+    line "Reference Line" [0, 100, 200, 300, 400]
+```
+
+**Test run results using 8 cores:**
+
+| Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
+|---------------|--------------------|------------------|---------|
+| 10000         | 0.420052           | 0.662177         | 0.63x   |
+| 50000         | 10.429007          | 5.354895         | 1.95x   |
+| 100000        | 41.319766          | 15.127752        | 2.73x   |
+| 200000        | 167.328850         | 47.526918        | 3.52x   |
+| 300000        | 372.563921         | 96.900925        | 3.84x   |
+
+- Red line - reference
+- Blue line - sequential
+- Green line - parallel
+
+```mermaid
+xychart-beta
+    title "Parallel bubble sort with 8 cores"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Time" 1 --> 400
+    line "Sequential" [0.412430, 10.429007, 41.319766, 167.328850, 372.563921]
+    line "Parallel" [0.662177, 5.354895, 15.127752, 47.526918, 96.900925]
+    line "Reference Line" [0, 100, 200, 300, 400]
+```
+
+**Speedup comparison:**
+
+- Blue - 2 threads
+- Green - 4 threads
+- Red - 6 threads
+- Yellow - 8 threads
+- White - reference
+
+```mermaid
+xychart-beta
+    title "Speedup comparison"
+    x-axis "Dataset" ["10000", "50000", "100000", "200000", "300000"]
+    y-axis "Speedup" 0 --> 4
+    line "2 threads" [1.02, 1.79, 2.00, 2.13, 2.19]
+    line "4 threads" [0.82, 2.06, 2.69, 3.30, 3.50]
+    line "6 threads" [0.81, 2.10, 2.73, 3.52, 3.80]
+    line "8 threads" [0.63, 1.95, 2.78, 3.55, 3.84]
+    line "reference" [0, 1, 2, 3, 4, 5]
+```
+
+## 5. Conclusions
+
+### 5.1 Key Findings
+
+Using the parallel version of bubble sort does in fact speed up the algorithm execution.
+With small datasets more threads seem to perform a bit worse, but increase in data sets sees a quite substantial
+speedup.
+Speedup sees to not follow linear increase but taper and slow down a bit with larger data sets.
+
+### 5.2 Limitations and Challenges
+
+Thread creation and usage with smaller datasets is more expensive, so more threads here does provide a good speedup.
+The bubble sort algorithm itself is not efficient using large datasets, so to have more efficient sorting with large
+data it would be better to use different algorithms, not just parallelization.

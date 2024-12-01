@@ -1,113 +1,81 @@
 #include <vector>
-#include <iostream>
+#include <algorithm>
 #include <chrono>
 #include <random>
+#include <iostream>
+#include <iomanip>
 #include <omp.h>
-#include <fstream>
-#include <sstream>
 
-void bubbleSort(std::vector<int>& dataset) {
-    const size_t size = dataset.size();
+void bubbleSort(std::vector<int> data) {
+    const size_t n = data.size();
 
-    for (size_t i = 0; i < size - 1; ++i) {
-        for (size_t j = 0; j < size - i - 1; ++j) {
-            if (dataset[j] > dataset[j + 1]) {
-                std::swap(dataset[j], dataset[j + 1]);
+    for (size_t i = 0; i < n - 1; ++i) {
+        for (size_t j = 0; j < n - i - 1; ++j) {
+            if (data[j] > data[j + 1]) {
+                std::swap(data[j], data[j + 1]);
             }
         }
     }
 }
 
-void bubbleSortFlag(std::vector<int>& dataset){
-    const size_t size = dataset.size();
+void bubbleSortParallel(std::vector<int> data, int numThreads) {
+    const size_t n = data.size();
+    bool isEvenPhase = true;
 
-    for (int i = 0; i < size - 1; i++){
-        bool swapped = false;
+    omp_set_num_threads(numThreads);
 
-        for (int j = 0; j < size - i - 1; j++){
-            if (dataset[j] > dataset[j + 1]){
-                std::swap(dataset[j], dataset[j + 1]);
-                swapped = true;
+    for (size_t i = 0; i < n - 1; ++i) {
+        #pragma omp parallel for
+        for (size_t j = isEvenPhase ? 0 : 1; j < n - 1; j += 2) {
+            if (data[j] > data[j + 1]) {
+                std::swap(data[j], data[j + 1]);
             }
         }
-
-        if (!swapped)
-            break;
-    }
-
-}
-
-void bubbleSortParallel(std::vector<int>& dataset) {
-    const size_t size = dataset.size();
-
-    for (size_t k = 0; k < size - 1; ++k) {
-        #pragma omp parallel for default(none) shared(dataset, size, k)
-        for (size_t i = k % 2; i < size- 1; i += 2)
-            if (dataset[i] > dataset[i + 1])
-                std::swap(dataset[i], dataset[i + 1]);
+        isEvenPhase = !isEvenPhase;
     }
 }
 
-
-void bubbleSortParallelFlag(std::vector<int>& dataset) {
-    const size_t size = dataset.size();
-    bool swapped = true;
-
-    for (size_t k = 0; swapped && k < size - 1; ++k) {
-        swapped = false;
-
-        #pragma omp parallel reduction(|:swapped)
-        {
-            #pragma omp for
-            for (size_t i = k % 2; i < size - 1; i += 2) {
-                if (dataset[i] > dataset[i + 1]) {
-                    std::swap(dataset[i], dataset[i + 1]);
-                    swapped = true;
-                }
-            }
-        }
-    }
-}
-
-int main()
-{
-    constexpr int DATA_SIZE = 10000;
-    constexpr int NUM_THREADS = 8;
-    constexpr int TEST_QUANTITY = 100;
-    constexpr float BASE_TIME = 0.420109;
-
-    omp_set_num_threads(NUM_THREADS);
-
-    double average = 0;
-    std::vector<int> dataset(DATA_SIZE);
-
+std::vector<int> generateRandomData(size_t size) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, 1000000);
+    std::uniform_int_distribution<> dis(1, 10000);
 
-    for (int i = 0; i < TEST_QUANTITY; ++i) {
-        for (auto& val : dataset) {
-            val = dis(gen);
-        }
-
-        std::cout << "\rTest repetition: " << i + 1 << " / " << TEST_QUANTITY << std::flush;
-
-        const auto start = std::chrono::high_resolution_clock::now();
-        // bubbleSort(dataset);
-        // bubbleSortFlag(dataset);
-        bubbleSortParallel(dataset);
-        // bubbleSortParallelFlag(dataset);
-        const auto end = std::chrono::high_resolution_clock::now();
-        const std::chrono::duration<double> elapsed = end - start;
-
-        average += elapsed.count();
+    std::vector<int> data(size);
+    for (auto& num : data) {
+        num = dis(gen);
     }
+    return data;
+}
 
-    average /= TEST_QUANTITY;
+template<typename Func>
+double measureExecutionTime(Func&& func) {
+    auto start = std::chrono::high_resolution_clock::now();
+    func();
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double>(end - start).count();
+}
 
-    std::cout << "\n";
-    std::cout << "Average time taken to sort with " << DATA_SIZE << " dataset and " << NUM_THREADS <<" of cores: " << average << " seconds\n";
-    std::cout << "Speedup: " << average/BASE_TIME << "\n";
+int main() {
+    constexpr size_t dataSize = 100000;
+    constexpr size_t numThreads = 8;
+
+    auto data1 = generateRandomData(dataSize);
+    auto data2 = data1;
+
+    double sequentialTime = measureExecutionTime([&]() {
+        bubbleSort(data1);
+    });
+
+    double parallelTime = measureExecutionTime([&]() {
+        bubbleSortParallel(data2, numThreads);
+    });
+
+    std::cout << "Sequential sort time: " << std::fixed << std::setprecision(6)
+              << sequentialTime << " seconds\n";
+    std::cout << "Parallel sort time (" << numThreads << " threads): "
+              << std::fixed << std::setprecision(6) << parallelTime << " seconds\n";
+    std::cout << "Speedup: " << std::fixed << std::setprecision(2)
+              << (parallelTime > 0 ? sequentialTime / parallelTime : 0) << "x\n";
 
     return 0;
 }
