@@ -58,7 +58,7 @@ void bubbleSortParallelFlag(std::vector<int>& dataset) {
 
         #pragma omp parallel reduction(|:swapped)
         {
-            #pragma omp for schedule(static)
+            #pragma omp for
             for (size_t i = k % 2; i < size - 1; i += 2) {
                 if (dataset[i] > dataset[i + 1]) {
                     std::swap(dataset[i], dataset[i + 1]);
@@ -74,6 +74,7 @@ int main()
     constexpr int DATA_SIZE = 10000;
     constexpr int NUM_THREADS = 8;
     constexpr int TEST_QUANTITY = 100;
+    constexpr float BASE_TIME = 0.420109;
 
     omp_set_num_threads(NUM_THREADS);
 
@@ -94,8 +95,8 @@ int main()
         const auto start = std::chrono::high_resolution_clock::now();
         // bubbleSort(dataset);
         // bubbleSortFlag(dataset);
-        // bubbleSortParallel(dataset);
-        bubbleSortParallelFlag(dataset);
+        bubbleSortParallel(dataset);
+        // bubbleSortParallelFlag(dataset);
         const auto end = std::chrono::high_resolution_clock::now();
         const std::chrono::duration<double> elapsed = end - start;
 
@@ -105,7 +106,8 @@ int main()
     average /= TEST_QUANTITY;
 
     std::cout << "\n";
-    std::cout << "Average time taken to sort with " << DATA_SIZE << " dataset: " << average << " seconds\n";
+    std::cout << "Average time taken to sort with " << DATA_SIZE << " dataset and " << NUM_THREADS <<" of cores: " << average << " seconds\n";
+    std::cout << "Speedup: " << average/BASE_TIME << "\n";
 
     return 0;
 }
