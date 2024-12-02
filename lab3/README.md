@@ -65,13 +65,13 @@ Experiment has been done on macbook m1 pro machine that has 8 cores in total
 
 **Test run results sequentially:**
 
-| Dataset Count | Sequential Run (s) | 
-|---------------|--------------------|
-| 10000         | 0.420052           | 
+| Dataset Count | Sequential Run (s) |
+| ------------- | ------------------ |
+| 10000         | 0.420052           |
 | 50000         | 10.429007          |
-| 100000        | 41.319766          | 
-| 200000        | 167.328850         | 
-| 300000        | 372.563921         | 
+| 100000        | 41.319766          |
+| 200000        | 167.328850         |
+| 300000        | 372.563921         |
 
 ```mermaid
 xychart-beta
@@ -85,16 +85,12 @@ xychart-beta
 **Test run results using 2 cores:**
 
 | Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
-|---------------|--------------------|------------------|---------|
+| ------------- | ------------------ | ---------------- | ------- |
 | 10000         | 0.420052           | 0.412430         | 1.02x   |
 | 50000         | 10.429007          | 5.825340         | 1.79x   |
 | 100000        | 41.319766          | 20.679956        | 2.00x   |
 | 200000        | 167.328850         | 78.722583        | 2.13x   |
 | 300000        | 372.563921         | 170.288452       | 2.19x   |
-
-- Red line - reference
-- Blue line - sequential
-- Green line - parallel
 
 ```mermaid
 xychart-beta
@@ -109,16 +105,12 @@ xychart-beta
 **Test run results using 4 cores:**
 
 | Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
-|---------------|--------------------|------------------|---------|
+| ------------- | ------------------ | ---------------- | ------- |
 | 10000         | 0.420052           | 0.513024         | 0.82x   |
 | 50000         | 10.429007          | 5.074885         | 2.06x   |
 | 100000        | 41.319766          | 15.379939        | 2.69x   |
 | 200000        | 167.328850         | 50.761146        | 3.30x   |
 | 300000        | 372.563921         | 106.569182       | 3.50x   |
-
-- Red line - reference
-- Blue line - sequential
-- Green line - parallel
 
 ```mermaid
 xychart-beta
@@ -133,16 +125,12 @@ xychart-beta
 **Test run results using 6 cores:**
 
 | Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
-|---------------|--------------------|------------------|---------|
+| ------------- | ------------------ | ---------------- | ------- |
 | 10000         | 0.420052           | 0.519214         | 0.81x   |
 | 50000         | 10.429007          | 4.962971         | 2.10x   |
 | 100000        | 41.319766          | 14.861962        | 2.78x   |
 | 200000        | 167.328850         | 47.126572        | 3.55x   |
 | 300000        | 372.563921         | 98.099047        | 3.80x   |
-
-- Red line - reference
-- Blue line - sequential
-- Green line - parallel
 
 ```mermaid
 xychart-beta
@@ -157,16 +145,12 @@ xychart-beta
 **Test run results using 8 cores:**
 
 | Dataset Count | Sequential Run (s) | Parallel Run (s) | Speedup |
-|---------------|--------------------|------------------|---------|
+| ------------- | ------------------ | ---------------- | ------- |
 | 10000         | 0.420052           | 0.662177         | 0.63x   |
 | 50000         | 10.429007          | 5.354895         | 1.95x   |
 | 100000        | 41.319766          | 15.127752        | 2.73x   |
 | 200000        | 167.328850         | 47.526918        | 3.52x   |
 | 300000        | 372.563921         | 96.900925        | 3.84x   |
-
-- Red line - reference
-- Blue line - sequential
-- Green line - parallel
 
 ```mermaid
 xychart-beta
