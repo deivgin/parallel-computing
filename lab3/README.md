@@ -179,7 +179,6 @@ xychart-beta
     line "4 threads" [0.82, 2.06, 2.69, 3.30, 3.50]
     line "6 threads" [0.81, 2.10, 2.73, 3.52, 3.80]
     line "8 threads" [0.63, 1.95, 2.78, 3.55, 3.84]
-    line "reference" [0, 1, 2, 3, 4, 5]
 ```
 
 ## 5. Conclusions

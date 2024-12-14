@@ -1,155 +1,127 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 #include <mpi.h>
 
-double measureExecutionTime(void (*func)(int[], int), int arr[], int size) {
-    struct timespec start, end;
-
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    func(arr, size);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    return (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-}
-
-void insertionSort(int arr[], int n) {
+void insertionSort(int arr[], const int n) {
     for (int i = 1; i < n; i++) {
         const int key = arr[i];
         int j = i - 1;
 
         while (j >= 0 && arr[j] > key) {
             arr[j + 1] = arr[j];
-            j = j - 1;
+            j--;
         }
         arr[j + 1] = key;
     }
 }
 
-void merge(int* arr1, int n1, int* arr2, int n2, int* result) {
+void merge(int arr[], const int left[], const int right[], const int left_size, const int right_size) {
     int i = 0, j = 0, k = 0;
 
-    while (i < n1 && j < n2) {
-        if (arr1[i] <= arr2[j]) {
-            result[k++] = arr1[i++];
+    while (i < left_size && j < right_size) {
+        if (left[i] <= right[j]) {
+            arr[k++] = left[i++];
         } else {
-            result[k++] = arr2[j++];
+            arr[k++] = right[j++];
         }
     }
 
-    while (i < n1) result[k++] = arr1[i++];
-    while (j < n2) result[k++] = arr2[j++];
-}
-
-int* generateRandomArray(int size, int max_value) {
-    int* arr = (int*)malloc(size * sizeof(int));
-    if (arr == NULL) {
-        fprintf(stderr, "Memory allocation failed!\n");
-        exit(1);
+    while (i < left_size) {
+        arr[k++] = left[i++];
     }
 
-    for (int i = 0; i < size; i++) {
-        arr[i] = rand() % max_value;
+    while (j < right_size) {
+        arr[k++] = right[j++];
     }
-    return arr;
 }
 
-int main(int argc, char** argv) {
-    // Initialize MPI
+void generateRandomArray(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 10000;
+    }
+}
+
+double runSequentialSort(const int n) {
+    int *arr = malloc(n * sizeof(int));
+    generateRandomArray(arr, n);
+
+    const double start_time = MPI_Wtime();
+    insertionSort(arr, n);
+    const double end_time = MPI_Wtime();
+
+    free(arr);
+    return end_time - start_time;
+}
+
+double runParallelSort(int n, int rank, int size) {
+    const int local_n = n / size;
+    int *data = NULL;
+    int *local_data = malloc(local_n * sizeof(int));
+    int *gathered_data = NULL;
+
+    if (rank == 0) {
+        data = malloc(n * sizeof(int));
+        gathered_data = malloc(n * sizeof(int));
+        generateRandomArray(data, n);
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    const double start_time = MPI_Wtime();
+
+    MPI_Scatter(data, local_n, MPI_INT, local_data, local_n, MPI_INT, 0, MPI_COMM_WORLD);
+
+    insertionSort(local_data, local_n);
+
+    MPI_Gather(local_data, local_n, MPI_INT, gathered_data, local_n, MPI_INT, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        int *temp = malloc(n * sizeof(int));
+        for (int i = 0; i < size - 1; i++) {
+            merge(temp, gathered_data, gathered_data + (i + 1) * local_n,
+                  (i + 1) * local_n, local_n);
+            for (int j = 0; j < (i + 2) * local_n; j++) {
+                gathered_data[j] = temp[j];
+            }
+        }
+        free(temp);
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    const double end_time = MPI_Wtime();
+
+    if (rank == 0) {
+        free(data);
+        free(gathered_data);
+    }
+    free(local_data);
+
+    return end_time - start_time;
+}
+
+int main(int argc, char *argv[]) {
     int rank, size;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    // Configuration parameters
-    const int total_size = 10000;     // Total array size
-    const int max_value = 10000;      // Maximum value for random numbers
+    const int n = 100000;
+    double sequential_time = 0;
+    double parallel_time = 0;
 
-    // Calculate local array size
-    const int local_size = total_size / size;
-    const int remainder = total_size % size;
-    const int my_size = (rank == size - 1) ? local_size + remainder : local_size;
-
-    // Root process generates data
-    int* global_array = NULL;
     if (rank == 0) {
-        srand(time(NULL));
-        global_array = generateRandomArray(total_size, max_value);
-        printf("Generated %d random numbers\n", total_size);
+        sequential_time = runSequentialSort(n);
+        printf("\nArray size: %d\n", n);
+        printf("Number of processes: %d\n", size);
+        printf("Sequential time: %f seconds\n", sequential_time);
     }
 
-    // Allocate local array
-    int* local_array = (int*)malloc(my_size * sizeof(int));
-    if (local_array == NULL) {
-        fprintf(stderr, "Process %d: Memory allocation failed\n", rank);
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+    parallel_time = runParallelSort(n, rank, size);
 
-    // Start timing
-    double start_time = MPI_Wtime();
-
-    // Distribute data
-    int* sendcounts = (int*)malloc(size * sizeof(int));
-    int* displs = (int*)malloc(size * sizeof(int));
-
-    for (int i = 0; i < size; i++) {
-        sendcounts[i] = (i == size - 1) ? local_size + remainder : local_size;
-        displs[i] = i * local_size;
-    }
-
-    MPI_Scatterv(global_array, sendcounts, displs, MPI_INT,
-                 local_array, my_size, MPI_INT,
-                 0, MPI_COMM_WORLD);
-
-    // Sort local array
-    insertionSort(local_array, my_size);
-
-    // Gather and merge results
     if (rank == 0) {
-        int* temp = (int*)malloc(total_size * sizeof(int));
-        if (temp == NULL) {
-            fprintf(stderr, "Root process: Memory allocation failed\n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
-        }
-
-        // Copy root's sorted array
-        for (int i = 0; i < my_size; i++) {
-            global_array[i] = local_array[i];
-        }
-
-        // Receive and merge from other processes
-        int current_size = my_size;
-        for (int i = 1; i < size; i++) {
-            MPI_Recv(temp, sendcounts[i], MPI_INT, i, 0,
-                    MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-            merge(global_array, current_size, temp, sendcounts[i], global_array);
-            current_size += sendcounts[i];
-        }
-
-        free(temp);
-
-        // Stop timing
-        double end_time = MPI_Wtime();
-        printf("Parallel execution time: %f seconds\n", end_time - start_time);
-
-        // Verify sorting
-        for (int i = 1; i < total_size; i++) {
-            if (global_array[i] < global_array[i-1]) {
-                printf("Sorting failed at index %d\n", i);
-                break;
-            }
-        }
-    } else {
-        // Send sorted local array to root
-        MPI_Send(local_array, my_size, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        printf("Parallel time: %f seconds\n", parallel_time);
+        printf("Speedup: %f\n", sequential_time / parallel_time);
     }
-
-    // Cleanup
-    if (rank == 0) free(global_array);
-    free(local_array);
-    free(sendcounts);
-    free(displs);
 
     MPI_Finalize();
     return 0;
